@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Safehouse — Admin HQ</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-card__tape login-card__tape--tl"></div>
+    <div class="login-card__tape login-card__tape--tr"></div>
+    <img src="https://rawr.hackclub.com/smart_dinosaur_docs.png" alt="Orpheus" class="login-dino"/>
+    <div class="login-card__stamp">Admin Only</div>
+    <h1>HQ Access</h1>
+    <p>Enter the secret password to enter the Safehouse command center.</p>
+    <input type="password" class="login-input" id="pwd-input" placeholder="••••••••" maxlength="32"/>
+    <button class="login-btn" id="pwd-submit">Enter the HQ →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="Hack Club" class="sidebar__flag"/>
+      <div>
+        <div class="sidebar__title">Safehouse</div>
+        <div class="sidebar__sub">Admin HQ</div>
+      </div>
+    </div>
+
+    <nav class="sidebar__nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-page="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </div>
+
+      <div class="nav-section">Attendees</div>
+      <div class="nav-item" data-page="rsvps">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        RSVPs
+      </div>
+      <div class="nav-item" data-page="coins">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        BBQ Coins
+      </div>
+
+      <div class="nav-section">Content</div>
+      <div class="nav-item" data-page="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Projects
+      </div>
+      <div class="nav-item" data-page="schedule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Schedule
+      </div>
+      <div class="nav-item" data-page="news">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Send News
+      </div>
+      <div class="nav-item" data-page="sponsors">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Sponsors
+      </div>
+    </nav>
+
+    <div class="sidebar__logout">
+      <button class="logout-btn" id="logout-btn">🔒 Lock HQ</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:.8rem;">
+        <button class="mob-menu-btn" id="mob-menu-btn">☰</button>
+        <div class="topbar__title" id="topbar-title">Dashboard</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;"><span id="sync-indicator" style="font-size:.78rem;font-weight:700;color:var(--muted);">Not synced</span><span id="last-sync-time" style="font-size:.75rem;color:var(--muted);"></span><button onclick="syncRSVPs(false)" style="font-family:var(--font-body);font-size:.78rem;font-weight:700;padding:.28rem .75rem;border-radius:6px;border:2px solid var(--amber);color:var(--amber);background:transparent;cursor:pointer;">Sync Now</button><div class="topbar__stamp" id="topbar-date"></div></div>
+    </div>
+
+    <!-- ── OVERVIEW ── -->
+    <div class="page active" id="page-overview">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Total RSVPs</div>
+          <div class="stat-card__value" id="stat-rsvps">0</div>
+          <div class="stat-card__sub">registered attendees</div>
+        </div>
+        <div class="stat-card stat-card--amber">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">BBQ Coins Given</div>
+          <div class="stat-card__value" id="stat-coins">0</div>
+          <div class="stat-card__sub">total distributed</div>
+        </div>
+        <div class="stat-card stat-card--blue">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Projects Submitted</div>
+          <div class="stat-card__value" id="stat-projects">0</div>
+          <div class="stat-card__sub">on the wall</div>
+        </div>
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Approved Projects</div>
+          <div class="stat-card__value" id="stat-approved">0</div>
+          <div class="stat-card__sub">shipped!</div>
+        </div>
+        <div class="stat-card stat-card--red">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Sponsors</div>
+          <div class="stat-card__value" id="stat-sponsors">0</div>
+          <div class="stat-card__sub">active sponsors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">News Sent</div>
+          <div class="stat-card__value" id="stat-news">0</div>
+          <div class="stat-card__sub">broadcasts</div>
+        </div>
+      </div>
+
+      <div class="section-title">Excitement Breakdown <span class="stamp">from RSVPs</span></div>
+      <div class="table-wrap" style="padding:1.4rem 1.4rem 2rem;">
+        <div class="bar-chart" id="excitement-chart">
+          <div class="bar bar--red" style="height:20%" data-label="😐 Meh" data-val="0"></div>
+          <div class="bar" style="height:30%" data-label="🤔 Maybe" data-val="0"></div>
+          <div class="bar" style="height:50%" data-label="😊 Interested" data-val="0"></div>
+          <div class="bar bar--green" style="height:70%" data-label="🔥 Excited" data-val="0"></div>
+          <div class="bar bar--green" style="height:100%" data-label="🤯 NEED IT" data-val="0"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Recent RSVPs <span class="stamp">latest 5</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Excitement</th><th>Heard From</th></tr></thead>
+          <tbody id="recent-rsvps-body">
+            <tr><td colspan="4" class="empty">No RSVPs yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── RSVPs ── -->
+    <div class="page" id="page-rsvps">
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input type="text" class="tbl-search" id="rsvp-search" placeholder="🔍 Search name or email…"/>
+          <span id="rsvp-count" style="font-size:.8rem;font-weight:700;color:var(--muted);white-space:nowrap;"></span>
+          <button class="btn-sm" id="export-rsvp-btn">⬇ Export CSV</button>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Excitement</th><th>Heard From</th><th>Registered</th></tr></thead>
+          <tbody id="rsvp-table-body">
+            <tr><td colspan="6" class="empty">No RSVPs yet. Waiting for hackers...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── COINS ── -->
+    <div class="page" id="page-coins">
+      <div class="stat-grid" style="margin-bottom:1.5rem;">
+        <div class="stat-card stat-card--amber">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Total Coins Distributed</div>
+          <div class="stat-card__value" id="coins-total-display">0</div>
+          <div class="stat-card__sub">BBQ 🍖</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Top Earner</div>
+          <div class="stat-card__value" style="font-size:1.2rem;" id="coins-top-earner">—</div>
+          <div class="stat-card__sub">leading the pack</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input type="text" class="tbl-search" id="coins-search" placeholder="🔍 Search attendee…"/>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>BBQ Coins 🍖</th><th>Adjust</th></tr></thead>
+          <tbody id="coins-table-body">
+            <tr><td colspan="4" class="empty">No attendees yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PROJECTS ── -->
+    <div class="page" id="page-projects">
+      <div class="stat-grid" style="margin-bottom:1.5rem;">
+        <div class="stat-card stat-card--blue">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Total Submitted</div>
+          <div class="stat-card__value" id="proj-total">0</div>
+        </div>
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Approved</div>
+          <div class="stat-card__value" id="proj-approved-count">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__tack"></div>
+          <div class="stat-card__label">Pending Review</div>
+          <div class="stat-card__value" id="proj-pending-count">0</div>
+        </div>
+      </div>
+      <!-- Add project -->
+      <div class="table-wrap" style="margin-bottom:1.5rem;">
+        <div class="add-row" style="flex-wrap:wrap;gap:.6rem;">
+          <input class="add-inp" id="new-proj-name" placeholder="Project name" style="flex:1;min-width:140px;"/>
+          <input class="add-inp" id="new-proj-author" placeholder="Author" style="flex:1;min-width:120px;"/>
+          <input class="add-inp" id="new-proj-desc" placeholder="Short description" style="flex:2;min-width:180px;"/>
+          <button class="add-btn" id="add-proj-btn">+ Add Project</button>
+        </div>
+      </div>
+      <div class="proj-grid" id="proj-grid">
+        <div class="empty" style="grid-column:1/-1;">No projects yet. Be the first to ship!</div>
+      </div>
+    </div>
+
+    <!-- ── SCHEDULE ── -->
+    <div class="page" id="page-schedule">
+      <div class="schedule-wrap">
+        <div id="schedule-list"></div>
+        <div class="add-row">
+          <input class="add-inp" id="new-sch-time" placeholder="Time (e.g. 10:00 AM)" style="width:140px;"/>
+          <input class="add-inp" id="new-sch-title" placeholder="Event title" style="flex:1;min-width:150px;"/>
+          <input class="add-inp" id="new-sch-desc" placeholder="Description (optional)" style="flex:2;min-width:180px;"/>
+          <button class="add-btn" id="add-sch-btn">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEWS ── -->
+    <div class="page" id="page-news">
+      <div class="news-form">
+        <label>📨 Subject</label>
+        <input class="news-inp" id="news-subject" placeholder="e.g. Safehouse is OPEN 🚀"/>
+        <label>📝 Message</label>
+        <textarea class="news-ta" id="news-body" placeholder="Write your message to all attendees…"></textarea>
+        <button class="news-send-btn" id="news-send-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send to All Attendees
+        </button>
+        <p style="font-size:.75rem;color:var(--muted);margin-top:.7rem;">⚠️ This saves to the log below. Connect to your email service to actually send.</p>
+      </div>
+
+      <div class="section-title">Sent History</div>
+      <div class="news-log" id="news-log">
+        <div class="empty">No news sent yet.</div>
+      </div>
+    </div>
+
+    <!-- ── SPONSORS ── -->
+    <div class="page" id="page-sponsors">
+      <!-- Add sponsor -->
+      <div class="table-wrap" style="margin-bottom:1.5rem;">
+        <div class="add-row" style="flex-wrap:wrap;gap:.6rem;">
+          <input class="add-inp" id="new-sp-name" placeholder="Sponsor name" style="flex:1;min-width:140px;"/>
+          <input class="add-inp" id="new-sp-type" placeholder="Type (Gold / Silver / In-kind)" style="flex:1;min-width:160px;"/>
+          <input class="add-inp" id="new-sp-contact" placeholder="Contact email" style="flex:1;min-width:160px;"/>
+          <button class="add-btn" id="add-sp-btn">+ Add Sponsor</button>
+        </div>
+      </div>
+      <div class="sponsor-grid" id="sponsor-grid">
+        <div class="empty" style="grid-column:1/-1;">No sponsors yet. Go get that bag! 💰</div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* CONFIG */
+const ADMIN_PASSWORD = 'safehouse2026';
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSrSqvihy7HmsAIYOoHMyYHAjyirgx4gyfb7IXOmmPpr-PVEutT09J-nA4uv7elpUJGmgwxbAF9rD8h/pub?output=csv';
+const REFRESH_MS = 30 * 60 * 1000;
+
+/* DATA */
+function getData(k,d){try{return JSON.parse(localStorage.getItem('sh_'+k))??d;}catch{return d;}}
+function setData(k,v){localStorage.setItem('sh_'+k,JSON.stringify(v));}
+
+let rsvps    = getData('rsvps', []);
+let coinMap  = getData('coinmap', {});
+let projects = getData('projects', []);
+let schedule = getData('schedule', [
+  {id:1,time:'09:00 AM',title:'Doors Open',desc:'Welcome to the Safehouse!'},
+  {id:2,time:'10:00 AM',title:'Hacking Begins',desc:'Build in secret. Ship in style.'},
+  {id:3,time:'01:00 PM',title:'BBQ Lunch Break',desc:'Earn coins, eat good.'},
+  {id:4,time:'05:00 PM',title:'Project Submissions',desc:'Pin your project to the wall.'},
+  {id:5,time:'07:00 PM',title:'Awards & Ceremony',desc:'Top shippers claim their loot.'},
+]);
+let sponsors = getData('sponsors', []);
+let newsLog  = getData('newslog',  []);
+
+/* CSV PARSER */
+function parseCSV(text){
+  const rows=[];
+  const lines=text.split(/\r\n|\r|\n/);
+  for(const line of lines){
+    if(!line.trim())continue;
+    const cols=[];let cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else cur+=ch;
+    }
+    cols.push(cur.trim());rows.push(cols);
+  }
+  return rows;
+}
+
+/* MAP EXCITEMENT */
+function mapExcited(v){
+  const s=(v||'').toLowerCase().trim();
+  if(s==='5'||s.includes('need it'))return'5';
+  if(s==='4'||s.includes('excited'))return'4';
+  if(s==='3'||s.includes('interested'))return'3';
+  if(s==='2'||s.includes('maybe'))return'2';
+  if(s==='1'||s.includes('meh'))return'1';
+  return s||'3';
+}
+
+/* GOOGLE SHEET SYNC — Columns: Timestamp | Name | Email | Excited | How did you hear */
+let syncTimer=null,isSyncing=false;
+async function syncRSVPs(silent=false){
+  if(isSyncing)return;
+  isSyncing=true;
+  const ind=document.getElementById('sync-indicator');
+  const lst=document.getElementById('last-sync-time');
+  if(ind){ind.textContent='Syncing...';ind.style.color='var(--amber)';}
+  try{
+    const res=await fetch('https://corsproxy.io/?'+encodeURIComponent(SHEET_CSV_URL),{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const rows=parseCSV(await res.text());
+    if(rows.length<2){
+      if(!silent)toast('Sheet is empty or no responses yet.');
+      if(ind){ind.textContent='No data yet';ind.style.color='var(--muted)';}
+      isSyncing=false;return;
+    }
+    const fresh=[];
+    for(let i=1;i<rows.length;i++){
+      const r=rows[i];
+      const email=(r[2]||'').trim().toLowerCase();
+      if(!email)continue;
+      fresh.push({id:i,date:(r[0]||'').trim(),name:(r[1]||'').trim()||'Unknown',
+        email,excited:mapExcited(r[3]),hear:(r[4]||'').trim(),
+        coins:coinMap[email]??0});
+    }
+    fresh.forEach(r=>{if(!(r.email in coinMap))coinMap[r.email]=0;});
+    rsvps=fresh;
+    setData('rsvps',rsvps);setData('coinmap',coinMap);
+    const now=new Date().toLocaleTimeString();
+    if(lst)lst.textContent='Last sync: '+now;
+    if(ind){ind.textContent='Synced: '+rsvps.length+' RSVPs';ind.style.color='var(--green)';}
+    renderOverview();renderRsvps();renderCoins();
+    if(!silent)toast('Synced! '+rsvps.length+' RSVPs loaded.');
+  }catch(err){
+    console.error('Sync error:',err);
+    if(ind){ind.textContent='Sync failed';ind.style.color='var(--red)';}
+    if(!silent)toast('Sync failed - check sheet is published publicly.');
+  }
+  isSyncing=false;
+}
+function startAutoSync(){syncRSVPs(false);syncTimer=setInterval(()=>syncRSVPs(true),REFRESH_MS);}
+function stopAutoSync(){if(syncTimer){clearInterval(syncTimer);syncTimer=null;}}
+
+/* ══════════════════════════════════
+   LOGIN
+══════════════════════════════════ */
+const loginScreen = document.getElementById('login-screen');
+const app = document.getElementById('app');
+
+document.getElementById('pwd-submit').addEventListener('click', tryLogin);
+document.getElementById('pwd-input').addEventListener('keydown', e => { if(e.key==='Enter') tryLogin(); });
+
+function tryLogin() {
+  const val = document.getElementById('pwd-input').value;
+  const err = document.getElementById('login-err');
+  if (val === ADMIN_PASSWORD) {
+    loginScreen.style.display = 'none';
+    app.style.display = 'block';
+    init();
+  } else {
+    err.textContent = '❌ Wrong password. Try again.';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+document.getElementById('logout-btn').addEventListener('click', () => {
+  stopAutoSync();
+  app.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('login-err').textContent = '';
+});
+
+/* ══════════════════════════════════
+   NAV / ROUTING
+══════════════════════════════════ */
+const titles = {
+  overview:'Dashboard', rsvps:'RSVPs', coins:'BBQ Coins',
+  projects:'Project Submissions', schedule:'Event Schedule',
+  news:'Send News', sponsors:'Sponsors'
+};
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('topbar-title').textContent = titles[page];
+    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  });
+});
+document.getElementById('mob-menu-btn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+function init() {
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  renderOverview();
+  renderRsvps();
+  renderCoins();
+  renderProjects();
+  renderSchedule();
+  renderNews();
+  renderSponsors();
+  startAutoSync();
+}
+
+/* ══════════════════════════════════
+   OVERVIEW
+══════════════════════════════════ */
+function renderOverview() {
+  document.getElementById('stat-rsvps').textContent = rsvps.length;
+  const totalCoins = rsvps.reduce((a,r)=>a+(r.coins||0),0);
+  document.getElementById('stat-coins').textContent = totalCoins.toLocaleString();
+  document.getElementById('stat-projects').textContent = projects.length;
+  document.getElementById('stat-approved').textContent = projects.filter(p=>p.status==='approved').length;
+  document.getElementById('stat-sponsors').textContent = sponsors.filter(s=>s.status==='confirmed').length;
+  document.getElementById('stat-news').textContent = newsLog.length;
+  document.getElementById('coins-total-display').textContent = totalCoins.toLocaleString();
+
+  // Excitement chart
+  const counts = [0,0,0,0,0];
+  rsvps.forEach(r => { const i = parseInt(r.excited||3)-1; if(i>=0&&i<5) counts[i]++; });
+  const max = Math.max(...counts,1);
+  const bars = document.querySelectorAll('#excitement-chart .bar');
+  bars.forEach((b,i) => {
+    b.style.height = Math.max(5,(counts[i]/max)*100)+'%';
+    b.dataset.val = counts[i];
+  });
+
+  // Recent RSVPs
+  const tbody = document.getElementById('recent-rsvps-body');
+  const recent = [...rsvps].reverse().slice(0,5);
+  if (!recent.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">No RSVPs yet.</td></tr>'; return; }
+  const excMap = {'1':'😐 Meh','2':'🤔 Maybe','3':'😊 Interested','4':'🔥 Excited','5':'🤯 NEED IT'};
+  tbody.innerHTML = recent.map(r=>`
+    <tr>
+      <td class="td-name">${esc(r.name)}</td>
+      <td class="td-email">${esc(r.email)}</td>
+      <td>${excMap[r.excited]||'—'}</td>
+      <td>${esc(r.hear||'—')}</td>
+    </tr>`).join('');
+}
+
+/* ══════════════════════════════════
+   RSVPs
+══════════════════════════════════ */
+function renderRsvps(filter='') {
+  const filtered = rsvps.filter(r =>
+    r.name.toLowerCase().includes(filter) ||
+    r.email.toLowerCase().includes(filter)
+  );
+  document.getElementById('rsvp-count').textContent = `${filtered.length} of ${rsvps.length}`;
+  const tbody = document.getElementById('rsvp-table-body');
+  if (!filtered.length) { tbody.innerHTML='<tr><td colspan="6" class="empty">No results.</td></tr>'; return; }
+  const excMap = {'1':'😐','2':'🤔','3':'😊','4':'🔥','5':'🤯'};
+  tbody.innerHTML = filtered.map((r,i)=>`
+    <tr>
+      <td style="color:var(--muted);font-size:.78rem;">${i+1}</td>
+      <td class="td-name">${esc(r.name)}</td>
+      <td class="td-email">${esc(r.email)}</td>
+      <td>${excMap[r.excited]||'—'} ${['','Meh','Maybe','Interested','Excited','NEED IT'][r.excited]||''}</td>
+      <td>${esc(r.hear||'—')}</td>
+      <td style="font-size:.78rem;color:var(--muted);">${r.date||'—'}</td>
+    </tr>`).join('');
+}
+document.getElementById('rsvp-search').addEventListener('input', e => renderRsvps(e.target.value.toLowerCase()));
+document.getElementById('export-rsvp-btn').addEventListener('click', exportCSV);
+
+function exportCSV() {
+  const headers = ['Name','Email','Excitement','Heard From','Date'];
+  const excMap = {'1':'Meh','2':'Maybe','3':'Interested','4':'Excited','5':'NEED IT'};
+  const rows = rsvps.map(r=>[r.name, r.email, excMap[r.excited]||r.excited, r.hear||'', r.date||''].map(v=>`"${v}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'safehouse-rsvps.csv';
+  a.click();
+  toast('📥 CSV exported!');
+}
+
+/* ══════════════════════════════════
+   COINS
+══════════════════════════════════ */
+function renderCoins(filter='') {
+  const filtered = rsvps.filter(r =>
+    r.name.toLowerCase().includes(filter) ||
+    r.email.toLowerCase().includes(filter)
+  );
+  const sorted = [...filtered].sort((a,b)=>(b.coins||0)-(a.coins||0));
+  if (sorted.length) document.getElementById('coins-top-earner').textContent = sorted[0].name;
+  const tbody = document.getElementById('coins-table-body');
+  if (!sorted.length) { tbody.innerHTML='<tr><td colspan="4" class="empty">No attendees yet.</td></tr>'; return; }
+  tbody.innerHTML = sorted.map(r=>`
+    <tr>
+      <td class="td-name">${esc(r.name)}</td>
+      <td class="td-email">${esc(r.email)}</td>
+      <td><b style="color:var(--amber);font-size:1rem;">🍖 ${(r.coins||0).toLocaleString()}</b></td>
+      <td>
+        <div class="coin-ctrl">
+          <input class="coin-inp" type="number" value="10" min="1" id="coin-amt-${r.id}"/>
+          <button class="coin-btn coin-btn--add" onclick="adjustCoins(${r.id},1)">+ Add</button>
+          <button class="coin-btn coin-btn--sub" onclick="adjustCoins(${r.id},-1)">− Sub</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+window.adjustCoins = function(id, dir) {
+  const r = rsvps.find(x=>x.id===id); if(!r) return;
+  const amt = parseInt(document.getElementById('coin-amt-'+id)?.value)||10;
+  r.coins = Math.max(0,(r.coins||0) + dir*amt);
+  coinMap[r.email] = r.coins;
+  setData('rsvps', rsvps);
+  setData('coinmap', coinMap);
+  renderCoins(document.getElementById('coins-search').value.toLowerCase());
+  renderOverview();
+  toast(dir>0 ? `+${amt} 🍖 given to ${r.name}!` : `-${amt} 🍖 removed from ${r.name}`);
+};
+document.getElementById('coins-search').addEventListener('input', e => renderCoins(e.target.value.toLowerCase()));
+
+/* ══════════════════════════════════
+   PROJECTS
+══════════════════════════════════ */
+function renderProjects() {
+  document.getElementById('proj-total').textContent = projects.length;
+  document.getElementById('proj-approved-count').textContent = projects.filter(p=>p.status==='approved').length;
+  document.getElementById('proj-pending-count').textContent = projects.filter(p=>p.status==='pending').length;
+  const grid = document.getElementById('proj-grid');
+  if (!projects.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1;">No projects yet. Be the first to ship!</div>'; return; }
+  grid.innerHTML = projects.map(p=>`
+    <div class="proj-card">
+      <div class="proj-card__tack"></div>
+      <div class="proj-card__status">
+        ${p.status==='approved'
+          ? '<span class="tbl-badge tbl-badge--green">✓ Approved</span>'
+          : p.status==='rejected'
+          ? '<span class="tbl-badge tbl-badge--red">✗ Rejected</span>'
+          : '<span class="tbl-badge tbl-badge--yellow">⏳ Pending</span>'}
+      </div>
+      <div class="proj-card__name">${esc(p.name)}</div>
+      <div class="proj-card__author">by ${esc(p.author)}</div>
+      <div class="proj-card__desc">${esc(p.desc)}</div>
+      <div class="proj-card__actions">
+        <button class="proj-btn proj-btn--approve" onclick="setProj(${p.id},'approved')">✓ Approve</button>
+        <button class="proj-btn proj-btn--pending" onclick="setProj(${p.id},'pending')">↺ Pending</button>
+        <button class="proj-btn proj-btn--reject" onclick="setProj(${p.id},'rejected')">✗ Reject</button>
+        <button class="proj-btn" style="color:var(--muted);border-color:var(--muted);" onclick="delProj(${p.id})">🗑</button>
+      </div>
+    </div>`).join('');
+  renderOverview();
+}
+window.setProj = function(id, status) {
+  const p = projects.find(x=>x.id===id); if(!p) return;
+  p.status = status; setData('projects', projects);
+  renderProjects();
+  toast(status==='approved' ? '✅ Project approved!' : status==='rejected' ? '❌ Project rejected' : '↺ Set to pending');
+};
+window.delProj = function(id) {
+  if (!confirm('Delete this project?')) return;
+  projects = projects.filter(x=>x.id!==id); setData('projects', projects);
+  renderProjects(); toast('🗑 Project deleted');
+};
+document.getElementById('add-proj-btn').addEventListener('click', () => {
+  const name = document.getElementById('new-proj-name').value.trim();
+  const author = document.getElementById('new-proj-author').value.trim();
+  const desc = document.getElementById('new-proj-desc').value.trim();
+  if (!name||!author) { toast('⚠️ Name and author required'); return; }
+  projects.push({id:Date.now(), name, author, desc, status:'pending'});
+  setData('projects', projects);
+  document.getElementById('new-proj-name').value='';
+  document.getElementById('new-proj-author').value='';
+  document.getElementById('new-proj-desc').value='';
+  renderProjects(); toast('📌 Project added!');
+});
+
+/* ══════════════════════════════════
+   SCHEDULE
+══════════════════════════════════ */
+function renderSchedule() {
+  const list = document.getElementById('schedule-list');
+  if (!schedule.length) { list.innerHTML='<div class="empty">No schedule yet.</div>'; return; }
+  const sorted = [...schedule].sort((a,b)=>a.time.localeCompare(b.time));
+  list.innerHTML = sorted.map(s=>`
+    <div class="schedule-item">
+      <div class="sch-time">${esc(s.time)}</div>
+      <div>
+        <div class="sch-title">${esc(s.title)}</div>
+        ${s.desc ? `<div class="sch-desc">${esc(s.desc)}</div>`:''}
+      </div>
+      <button class="sch-del" onclick="delSch(${s.id})">🗑</button>
+    </div>`).join('');
+}
+window.delSch = function(id) {
+  schedule = schedule.filter(x=>x.id!==id); setData('schedule', schedule);
+  renderSchedule(); toast('🗑 Event removed');
+};
+document.getElementById('add-sch-btn').addEventListener('click', () => {
+  const time = document.getElementById('new-sch-time').value.trim();
+  const title = document.getElementById('new-sch-title').value.trim();
+  const desc = document.getElementById('new-sch-desc').value.trim();
+  if (!time||!title) { toast('⚠️ Time and title required'); return; }
+  schedule.push({id:Date.now(), time, title, desc});
+  setData('schedule', schedule);
+  document.getElementById('new-sch-time').value='';
+  document.getElementById('new-sch-title').value='';
+  document.getElementById('new-sch-desc').value='';
+  renderSchedule(); toast('📅 Event added!');
+});
+
+/* ══════════════════════════════════
+   NEWS
+══════════════════════════════════ */
+function renderNews() {
+  const log = document.getElementById('news-log');
+  if (!newsLog.length) { log.innerHTML='<div class="empty">No news sent yet.</div>'; return; }
+  log.innerHTML = [...newsLog].reverse().map(n=>`
+    <div class="news-log-item">
+      <div class="news-log-item__subj">📨 ${esc(n.subject)}</div>
+      <div class="news-log-item__meta">${esc(n.date)} · Sent to ${n.recipients} attendees</div>
+      <div style="font-size:.82rem;color:var(--ink-light);margin-top:.35rem;">${esc(n.body).substring(0,120)}${n.body.length>120?'…':''}</div>
+    </div>`).join('');
+  document.getElementById('stat-news').textContent = newsLog.length;
+}
+document.getElementById('news-send-btn').addEventListener('click', () => {
+  const subject = document.getElementById('news-subject').value.trim();
+  const body = document.getElementById('news-body').value.trim();
+  if (!subject||!body) { toast('⚠️ Subject and message required'); return; }
+  newsLog.push({
+    id: Date.now(), subject, body,
+    date: new Date().toLocaleDateString(),
+    recipients: rsvps.length
+  });
+  setData('newslog', newsLog);
+  document.getElementById('news-subject').value='';
+  document.getElementById('news-body').value='';
+  renderNews(); toast(`📨 News logged! (${rsvps.length} attendees)`);
+});
+
+/* ══════════════════════════════════
+   SPONSORS
+══════════════════════════════════ */
+function renderSponsors() {
+  document.getElementById('stat-sponsors').textContent = sponsors.filter(s=>s.status==='confirmed').length;
+  const grid = document.getElementById('sponsor-grid');
+  if (!sponsors.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1;">No sponsors yet. Go get that bag! 💰</div>'; return; }
+  const statusBadge = s => s==='confirmed'
+    ? '<span class="tbl-badge tbl-badge--green">✓ Confirmed</span>'
+    : s==='rejected'
+    ? '<span class="tbl-badge tbl-badge--red">✗ Declined</span>'
+    : '<span class="tbl-badge tbl-badge--yellow">⏳ Outreach</span>';
+  grid.innerHTML = sponsors.map(s=>`
+    <div class="sponsor-card">
+      <div class="sponsor-card__name">${esc(s.name)}</div>
+      <div class="sponsor-card__type">${esc(s.type||'Sponsor')}</div>
+      <div class="sponsor-card__status">${statusBadge(s.status)}</div>
+      ${s.contact ? `<div style="font-size:.75rem;color:var(--muted);margin-bottom:.6rem;">📧 ${esc(s.contact)}</div>`:'' }
+      <div class="sponsor-card__actions">
+        <button class="proj-btn proj-btn--approve" onclick="setSp(${s.id},'confirmed')">✓ Confirmed</button>
+        <button class="proj-btn proj-btn--pending" onclick="setSp(${s.id},'outreach')">↺ Outreach</button>
+        <button class="proj-btn proj-btn--reject" onclick="setSp(${s.id},'rejected')">✗ Declined</button>
+        <button class="proj-btn" style="color:var(--muted);border-color:var(--muted);" onclick="delSp(${s.id})">🗑</button>
+      </div>
+    </div>`).join('');
+}
+window.setSp = function(id, status) {
+  const s = sponsors.find(x=>x.id===id); if(!s) return;
+  s.status = status; setData('sponsors', sponsors);
+  renderSponsors(); renderOverview();
+  toast(status==='confirmed' ? '🎉 Sponsor confirmed!' : status==='rejected' ? '❌ Marked declined' : '↺ Back to outreach');
+};
+window.delSp = function(id) {
+  if (!confirm('Delete this sponsor?')) return;
+  sponsors = sponsors.filter(x=>x.id!==id); setData('sponsors', sponsors);
+  renderSponsors(); toast('🗑 Sponsor removed');
+};
+document.getElementById('add-sp-btn').addEventListener('click', () => {
+  const name = document.getElementById('new-sp-name').value.trim();
+  const type = document.getElementById('new-sp-type').value.trim();
+  const contact = document.getElementById('new-sp-contact').value.trim();
+  if (!name) { toast('⚠️ Sponsor name required'); return; }
+  sponsors.push({id:Date.now(), name, type, contact, status:'outreach'});
+  setData('sponsors', sponsors);
+  document.getElementById('new-sp-name').value='';
+  document.getElementById('new-sp-type').value='';
+  document.getElementById('new-sp-contact').value='';
+  renderSponsors(); renderOverview(); toast('💰 Sponsor added!');
+});
+
+/* ── Utility ── */
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Safehouse — Your HQ</title>
+  <style>
+    @font-face{font-family:'Phantom Sans';src:url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+    @font-face{font-family:'Phantom Sans';src:url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+:root{
+  --paper:#f5f0e6;--paper2:#ede7d5;--paper3:#e8dfc8;
+  --ink:#1f2d3d;--ink-light:#3c4858;--muted:#7a6e5f;
+  --red:#c0392b;--amber:#e67e22;--gold:#d4a017;
+  --blue:#2980b9;--green:#27ae60;--purple:#8e44ad;
+  --sticky-y:#fde68a;--sticky-g:#bbf7d0;--sticky-p:#fecaca;
+  --border:rgba(31,45,61,.12);
+  --font-display:'Permanent Marker',cursive;
+  --font-hand:'Caveat',cursive;
+  --font-body:'Phantom Sans',system-ui,sans-serif;
+  --wall:#d4c9b0;--floor:#b8a98a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");}
+img{display:block;max-width:100%;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--paper2);}
+::-webkit-scrollbar-thumb{background:var(--amber);border-radius:3px;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,#1f2d3d 0%,#2c3e50 60%,rgba(192,57,43,.15) 100%);display:flex;align-items:center;justify-content:center;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(160deg,#1f2d3d 0%,#2c3e50 60%);background-size:40px 40px,40px 40px,100% 100%;}
+.login-card{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:2.5rem 2rem;max-width:360px;width:92%;text-align:center;box-shadow:8px 8px 0 var(--red);position:relative;}
+.login-tape{position:absolute;width:70px;height:18px;background:rgba(255,230,150,.85);border-radius:2px;}
+.login-tape--tl{top:-10px;left:28px;transform:rotate(-4deg);}
+.login-tape--tr{top:-10px;right:28px;transform:rotate(3deg);}
+.login-dino{width:64px;margin:0 auto .8rem;animation:bob 3s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.login-stamp{display:inline-block;font-family:var(--font-display);font-size:.78rem;color:var(--red);border:2.5px solid var(--red);padding:.15rem .55rem;border-radius:3px;transform:rotate(-2deg);margin-bottom:.7rem;}
+.login-card h1{font-family:var(--font-display);font-size:1.8rem;color:var(--ink);text-shadow:3px 3px 0 var(--amber);margin-bottom:.25rem;}
+.login-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.2rem;}
+.login-input{width:100%;font-family:var(--font-body);font-size:.95rem;color:var(--ink);background:var(--paper2);border:2px solid var(--border);border-radius:6px;padding:.65rem .9rem;outline:none;transition:border-color .2s;margin-bottom:.8rem;}
+.login-input:focus{border-color:var(--amber);}
+.login-btn{width:100%;font-family:var(--font-body);font-weight:700;font-size:.95rem;background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:.75rem;cursor:pointer;box-shadow:4px 4px 0 var(--red);transition:transform .18s,box-shadow .18s;}
+.login-btn:hover{transform:translateY(-2px);box-shadow:6px 6px 0 var(--red);}
+.login-err{font-size:.78rem;color:var(--red);font-weight:700;min-height:1rem;margin-top:.4rem;}
+
+/* APP */
+#app{display:none;height:100vh;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.55rem 1.5rem;background:rgba(245,240,230,.97);border-bottom:2px solid var(--border);box-shadow:0 2px 10px rgba(31,45,61,.07);z-index:10;flex-shrink:0;}
+.topbar__brand{display:flex;align-items:center;gap:.5rem;}
+.topbar__flag{height:28px;}
+.topbar__name{font-family:var(--font-display);font-size:1.1rem;color:var(--ink);}
+.topbar__right{display:flex;align-items:center;gap:.8rem;}
+.topbar__user{font-size:.85rem;font-weight:700;color:var(--ink-light);}
+.topbar__coins{background:var(--sticky-y);border:2px solid var(--gold);border-radius:20px;padding:.2rem .75rem;font-size:.82rem;font-weight:700;color:var(--ink);}
+.topbar__logout{background:none;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:.75rem;font-weight:700;color:var(--muted);padding:.25rem .65rem;cursor:pointer;transition:all .15s;}
+.topbar__logout:hover{border-color:var(--red);color:var(--red);}
+
+/* ROOM */
+.room-wrap{flex:1;overflow:hidden;position:relative;}
+.room{width:100%;height:100%;position:relative;overflow:hidden;background:#87CEEB;transition:opacity .4s;}
+.room__bg{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.view-btn{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);z-index:10;font-family:"Caveat",cursive;font-size:1.2rem;font-weight:700;background:#f5f0e6;color:#1f2d3d;border:3px solid #1f2d3d;border-radius:12px;padding:.6rem 2rem;cursor:pointer;box-shadow:4px 4px 0 #c0392b;transition:all .2s;white-space:nowrap;}
+.view-btn:hover{transform:translateX(-50%) translateY(-3px);box-shadow:6px 6px 0 #c0392b;}
+.view-label{position:absolute;font-family:"Caveat",cursive;font-size:.9rem;font-weight:700;background:#1f2d3d;color:#f5f0e6;padding:.2rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:8;transform:translateX(-50%);text-align:center;}
+
+/* ZONE */
+.zone{position:absolute;cursor:pointer;z-index:4;transform-origin:bottom center;transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .18s;}
+.zone:hover{transform:scale(1.06) translateY(-6px);filter:brightness(1.06) drop-shadow(0 6px 16px rgba(31,45,61,.18));}
+.zone:active{transform:scale(.97);}
+.zone__tooltip{position:absolute;left:50%;transform:translateX(-50%) translateY(6px);bottom:calc(100% + 10px);background:#1f2d3d;color:#f5f0e6;font-family:'Caveat',cursive;font-size:.95rem;font-weight:700;padding:.3rem .9rem;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:0 4px 12px rgba(31,45,61,.3);z-index:20;}
+.zone:hover .zone__tooltip{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(31,45,61,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:2rem 1.8rem;max-width:500px;width:92%;box-shadow:8px 8px 0 var(--ink);position:relative;animation:slideUp .25s ease;max-height:88vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal__tape{position:absolute;width:65px;height:18px;background:rgba(255,230,150,.85);border-radius:2px;}
+.modal__tape--tl{top:-10px;left:24px;transform:rotate(-3deg);}
+.modal__tape--tr{top:-10px;right:24px;transform:rotate(2deg);}
+.modal__close{position:absolute;top:.7rem;right:.8rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);transition:color .15s;}
+.modal__close:hover{color:var(--red);}
+.modal__stamp{display:inline-block;font-family:var(--font-display);font-size:.75rem;letter-spacing:.06em;color:var(--amber);border:2px solid var(--amber);padding:.1rem .5rem;border-radius:3px;transform:rotate(-1.5deg);margin-bottom:.5rem;}
+.modal h2{font-family:var(--font-display);font-size:1.6rem;color:var(--ink);margin-bottom:.5rem;}
+.modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:.8rem;}
+.modal-field{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem;}
+.modal-label{font-size:.8rem;font-weight:700;color:var(--ink);letter-spacing:.03em;}
+.modal-input,.modal-textarea,.modal-select{font-family:var(--font-body);font-size:.9rem;color:var(--ink);background:var(--paper2);border:2px solid var(--border);border-radius:6px;padding:.6rem .85rem;outline:none;transition:border-color .2s;width:100%;}
+.modal-input:focus,.modal-textarea:focus{border-color:var(--amber);}
+.modal-textarea{resize:vertical;min-height:80px;}
+.modal-btn{font-family:var(--font-body);font-weight:700;font-size:.92rem;background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:.65rem 1.5rem;cursor:pointer;box-shadow:4px 4px 0 var(--red);transition:all .18s;display:inline-flex;align-items:center;gap:.5rem;}
+.modal-btn:hover{transform:translateY(-2px);box-shadow:6px 6px 0 var(--red);}
+.modal-btn--green{background:var(--green);box-shadow:4px 4px 0 #145a32;}
+.modal-btn--green:hover{box-shadow:6px 6px 0 #145a32;}
+.modal-btn--ghost{background:transparent;color:var(--ink);border:2px solid var(--ink);box-shadow:3px 3px 0 rgba(31,45,61,.15);}
+.modal-btn--ghost:hover{box-shadow:5px 5px 0 rgba(31,45,61,.2);}
+
+/* SHOP GRID */
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.5rem;}
+.shop-item{background:var(--paper2);border:2px solid var(--border);border-radius:8px;padding:.8rem;cursor:pointer;transition:all .15s;text-align:center;}
+.shop-item:hover{border-color:var(--amber);background:var(--sticky-y);transform:translateY(-2px);}
+.shop-item__icon{font-size:1.8rem;margin-bottom:.3rem;}
+.shop-item__name{font-size:.78rem;font-weight:700;color:var(--ink);}
+.shop-item__cost{font-size:.72rem;color:var(--amber);font-weight:700;margin-top:.25rem;}
+
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;border-radius:6px;margin-bottom:.4rem;background:var(--paper2);}
+.lb-rank{font-family:var(--font-display);font-size:1rem;width:28px;text-align:center;}
+.lb-name{flex:1;font-weight:700;font-size:.88rem;}
+.lb-coins{font-size:.8rem;font-weight:700;color:var(--amber);}
+.lb-row--me{background:var(--sticky-y);border:2px solid var(--gold);}
+
+/* VOTE */
+.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.5rem;}
+.vote-card{background:var(--paper2);border:2px solid var(--border);border-radius:8px;padding:.8rem;text-align:center;cursor:pointer;transition:all .15s;}
+.vote-card:hover{border-color:var(--blue);background:#dbeafe;transform:translateY(-2px);}
+.vote-card.voted{border-color:var(--green);background:var(--sticky-g);}
+.vote-card__name{font-weight:700;font-size:.85rem;margin-bottom:.2rem;}
+.vote-card__author{font-size:.72rem;color:var(--muted);}
+.vote-card__votes{font-size:.78rem;font-weight:700;color:var(--blue);margin-top:.3rem;}
+
+/* TIMER */
+.timer-wrap{display:flex;gap:.8rem;justify-content:center;margin:.8rem 0;}
+.timer-block{background:var(--ink);color:#fff;border-radius:8px;padding:.55rem .8rem;text-align:center;min-width:56px;box-shadow:3px 3px 0 var(--amber);}
+.timer-block__num{font-family:var(--font-display);font-size:1.5rem;line-height:1;}
+.timer-block__label{font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);}
+
+/* TRACKER */
+.tracker-btn{font-size:1.5rem;width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;}
+.tracker-btn--start{background:var(--green);box-shadow:4px 4px 0 #145a32;}
+.tracker-btn--stop{background:var(--red);box-shadow:4px 4px 0 #7b241c;}
+.tracker-btn:hover{transform:scale(1.1);}
+.tracker-display{font-family:var(--font-display);font-size:2.2rem;color:var(--ink);text-align:center;margin:.5rem 0 .25rem;}
+.tracker-log-item{display:flex;justify-content:space-between;font-size:.78rem;padding:.32rem .55rem;border-radius:4px;background:var(--paper2);margin-bottom:.3rem;}
+
+/* SCHEDULE */
+.sch-item{display:flex;gap:1rem;padding:.65rem 0;border-bottom:1px dashed var(--border);align-items:flex-start;}
+.sch-item:last-child{border-bottom:none;}
+.sch-time{font-family:var(--font-hand);font-size:1rem;font-weight:700;color:var(--amber);min-width:72px;}
+.sch-title{font-weight:700;font-size:.88rem;}
+.sch-desc{font-size:.75rem;color:var(--muted);}
+
+/* COIN DISPLAY */
+.coin-big{font-family:var(--font-display);font-size:2.8rem;color:var(--amber);text-shadow:3px 3px 0 rgba(212,160,23,.25);text-align:center;margin:.4rem 0;}
+.coin-sub{font-size:.78rem;color:var(--muted);text-align:center;margin-bottom:1rem;}
+.earn-row{display:flex;justify-content:space-between;font-size:.82rem;padding:.3rem 0;border-bottom:1px dashed var(--border);}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--ink);color:#fff;font-family:var(--font-body);font-size:.85rem;font-weight:700;padding:.7rem 1.2rem;border-radius:8px;box-shadow:4px 4px 0 var(--red);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:600px){
+  .shop-grid,.vote-grid{grid-template-columns:1fr;}
+  .timer-wrap{gap:.4rem;}
+}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-tape login-tape--tl"></div>
+    <div class="login-tape login-tape--tr"></div>
+    <img src="https://rawr.hackclub.com/hyper-dino-wave.gif" alt="Orpheus" class="login-dino"/>
+    <div class="login-stamp">Your HQ</div>
+    <h1>Enter the Room</h1>
+    <p>Use the email you RSVP'd with to unlock your personal HQ.</p>
+    <input class="login-input" id="login-email" type="email" placeholder="you@email.com" autocomplete="email"/>
+    <button class="login-btn" id="login-btn">Open My Room →</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar__brand">
+      <img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="HC" class="topbar__flag"/>
+      <span class="topbar__name">Safehouse HQ</span>
+    </div>
+    <div class="topbar__right">
+      <span class="topbar__user" id="topbar-name">Hacker</span>
+      <span class="topbar__coins" id="topbar-coins">🍖 0</span>
+      <button class="topbar__logout" id="logout-btn">Leave Room</button>
+    </div>
+  </div>
+  <div class="room-wrap">
+    <div class="room" id="room">
+
+      <!-- ═══ OUTSIDE VIEW ═══ -->
+      <div id="view-outside" style="position:absolute;inset:0;z-index:1;">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 1200 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="ink" x="-2%" y="-2%" width="104%" height="104%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.02 0.04" numOctaves="3" seed="8" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs>
+
+<!-- ═══ SKY ═══ -->
+<rect x="0" y="0" width="1200" height="480" fill="#b8e4f9"/>
+<!-- Sky layering for depth -->
+<rect x="0" y="300" width="1200" height="180" fill="#c8eefa"/>
+<!-- Sun with bold ink outline -->
+<circle cx="1050" cy="110" r="64" fill="#ffe566" stroke="#1a1a2e" stroke-width="4"/>
+<circle cx="1050" cy="110" r="52" fill="#ffd54f" stroke="none"/>
+<!-- Sun rays (hand-drawn thick lines) -->
+<line x1="1050" y1="28" x2="1050" y2="8" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="1104" y1="56" x2="1120" y2="42" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="1130" y1="110" x2="1152" y2="110" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="1104" y1="164" x2="1120" y2="178" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="996" y1="56" x2="980" y2="42" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="970" y1="110" x2="948" y2="110" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="996" y1="164" x2="980" y2="178" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+<line x1="1050" y1="192" x2="1050" y2="212" stroke="#ffd54f" stroke-width="6" stroke-linecap="round"/>
+
+<!-- ═══ CLOUDS (hand-drawn thick outline style) ═══ -->
+<!-- Cloud 1 -->
+<path d="M80 120 Q88 96 112 98 Q120 78 148 82 Q168 66 192 78 Q214 62 236 76 Q260 66 272 86 Q288 78 296 98 Q308 116 294 130 Q278 146 254 138 Q234 152 208 144 Q184 158 158 148 Q130 162 108 150 Q80 158 72 136 Q64 120 80 120Z" fill="#fff" stroke="#1a1a2e" stroke-width="3.5"/>
+<path d="M82 136 Q100 142 130 138 Q160 152 190 144 Q210 152 232 144 Q255 152 272 140" fill="none" stroke="#d8d8e8" stroke-width="2"/>
+<!-- Cloud 2 -->
+<path d="M380 80 Q390 58 418 62 Q428 44 456 48 Q474 34 496 46 Q518 36 532 52 Q550 44 560 62 Q574 78 560 92 Q542 106 518 98 Q496 110 470 102 Q444 114 418 106 Q390 116 376 102 Q364 88 380 80Z" fill="#fff" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Cloud 3 (big) -->
+<path d="M720 60 Q734 38 764 42 Q776 24 808 28 Q828 12 854 24 Q878 14 896 30 Q918 20 932 40 Q950 58 934 72 Q916 88 890 80 Q866 94 836 86 Q806 98 778 88 Q748 100 728 86 Q708 90 706 74 Q704 58 720 60Z" fill="#fffde7" stroke="#1a1a2e" stroke-width="3.5"/>
+<path d="M724 76 Q750 82 780 78 Q810 86 838 78 Q862 86 886 78" fill="none" stroke="#e8e8d8" stroke-width="2"/>
+
+<!-- ═══ ROLLING HILLS (layered depth) ═══ -->
+<!-- Far hill -->
+<path d="M0 380 Q200 330 400 360 Q600 390 800 348 Q1000 310 1200 345 L1200 480 L0 480Z" fill="#6db56d" stroke="#2d5a2d" stroke-width="3"/>
+<!-- Mid hill -->
+<path d="M0 420 Q150 390 350 410 Q550 430 750 402 Q950 374 1100 395 Q1150 402 1200 398 L1200 680 L0 680Z" fill="#5aaa32" stroke="#2d5a1a" stroke-width="4"/>
+<!-- Near ground -->
+<path d="M0 460 Q200 445 400 458 Q600 471 800 452 Q1000 435 1200 448 L1200 680 L0 680Z" fill="#4a9428" stroke="#1e5010" stroke-width="4.5"/>
+<!-- Ground base -->
+<rect x="0" y="500" width="1200" height="180" fill="#3d8022"/>
+<!-- Grass tuft details -->
+<path d="M120 460 Q122 450 126 460" fill="none" stroke="#2d6018" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M130 458 Q134 446 138 458" fill="none" stroke="#2d6018" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M320 452 Q324 440 328 452" fill="none" stroke="#2d6018" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M890 448 Q894 436 898 448" fill="none" stroke="#2d6018" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M1060 455 Q1064 443 1068 455" fill="none" stroke="#2d6018" stroke-width="2.5" stroke-linecap="round"/>
+
+<!-- ═══ STONE PATH ═══ -->
+<path d="M490 680 Q500 570 520 480 L680 480 Q700 570 710 680Z" fill="#c8b888" stroke="#8a7848" stroke-width="3.5" filter="url(#ink)"/>
+<!-- Path stones (thick outlined) -->
+<ellipse cx="564" cy="640" rx="38" ry="16" fill="#b8a870" stroke="#6a5828" stroke-width="3" filter="url(#ink)"/>
+<ellipse cx="596" cy="600" rx="34" ry="14" fill="#c0b078" stroke="#6a5828" stroke-width="2.5" filter="url(#ink)"/>
+<ellipse cx="576" cy="558" rx="30" ry="13" fill="#b8a870" stroke="#6a5828" stroke-width="2.5" filter="url(#ink)"/>
+<ellipse cx="604" cy="522" rx="28" ry="12" fill="#c0b078" stroke="#6a5828" stroke-width="2.5" filter="url(#ink)"/>
+<!-- Path edge grass -->
+<path d="M488 680 Q480 650 470 620 Q475 610 490 630 Q495 600 505 590" fill="none" stroke="#2d7018" stroke-width="2.5" stroke-linecap="round"/>
+
+<!-- ═══ BIG OAK TREE LEFT ═══ -->
+<!-- Trunk with roots -->
+<path d="M108 490 Q100 460 96 400 Q92 350 100 290 Q108 280 116 290 Q124 350 120 400 Q116 460 112 490Z" fill="#7a4a1a" stroke="#3a2008" stroke-width="4"/>
+<!-- Roots -->
+<path d="M100 488 Q80 492 60 480 Q70 475 85 482 Q90 470 80 462" fill="none" stroke="#5a3008" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M120 490 Q140 495 160 485 Q148 478 134 484 Q128 472 136 464" fill="none" stroke="#5a3008" stroke-width="3.5" stroke-linecap="round"/>
+<!-- Branches -->
+<path d="M108 340 Q80 310 52 295 Q72 298 88 316 Q94 300 82 280" fill="none" stroke="#6a3a10" stroke-width="5" stroke-linecap="round"/>
+<path d="M112 310 Q140 282 168 268 Q150 278 140 298 Q152 285 158 264" fill="none" stroke="#6a3a10" stroke-width="4.5" stroke-linecap="round"/>
+<!-- Main canopy layers (bold outlined) -->
+<ellipse cx="110" cy="250" rx="108" ry="130" fill="#2a6e18" stroke="#1a3e08" stroke-width="5"/>
+<ellipse cx="78" cy="278" rx="72" ry="90" fill="#348a20" stroke="#1a3e08" stroke-width="3.5"/>
+<ellipse cx="144" cy="272" rx="76" ry="88" fill="#348a20" stroke="#1a3e08" stroke-width="3.5"/>
+<ellipse cx="110" cy="220" rx="62" ry="72" fill="#42a628" stroke="#1a3e08" stroke-width="3"/>
+<ellipse cx="88" cy="240" rx="44" ry="55" fill="#50ba32" stroke="#1a3e08" stroke-width="2.5"/>
+<ellipse cx="132" cy="235" rx="46" ry="52" fill="#50ba32" stroke="#1a3e08" stroke-width="2.5"/>
+<!-- Tree top highlight -->
+<ellipse cx="108" cy="210" rx="28" ry="32" fill="#64cc40" stroke="none"/>
+<!-- Fruit on tree -->
+<circle cx="70" cy="260" r="10" fill="#e84030" stroke="#8a1808" stroke-width="2.5"/>
+<circle cx="148" cy="248" r="9" fill="#e84030" stroke="#8a1808" stroke-width="2.5"/>
+<circle cx="110" cy="300" r="8" fill="#f0b820" stroke="#8a6800" stroke-width="2"/>
+<!-- NO ADULTS sign -->
+<rect x="56" y="370" width="88" height="42" rx="4" fill="#f5f0e0" stroke="#2a1808" stroke-width="3.5" transform="rotate(-6,100,391)" filter="url(#ink)"/>
+<rect x="58" y="372" width="84" height="38" rx="3" fill="#fde8b8" stroke="none" transform="rotate(-6,100,391)"/>
+<text x="100" y="386" font-family="'Permanent Marker',cursive" font-size="11" fill="#c0392b" text-anchor="middle" transform="rotate(-6,100,391)">NO ADULTS</text>
+<text x="100" y="400" font-family="'Caveat',cursive" font-size="10" fill="#1a1a2e" text-anchor="middle" transform="rotate(-6,100,391)">ALLOWED!! 🚫</text>
+<!-- Sign nail -->
+<circle cx="58" cy="370" r="4" fill="#888" stroke="#444" stroke-width="1.5" transform="rotate(-6,100,391)"/>
+<circle cx="142" cy="370" r="4" fill="#888" stroke="#444" stroke-width="1.5" transform="rotate(-6,100,391)"/>
+
+<!-- ═══ PINE TREE RIGHT ═══ -->
+<rect x="1050" y="360" width="24" height="160" rx="5" fill="#6b3a1a" stroke="#3a1e08" stroke-width="3.5"/>
+<!-- Pine layers (bold outlined triangles) -->
+<path d="M1062 360 L990 468 L1134 468Z" fill="#2a6e18" stroke="#1a3e08" stroke-width="4.5"/>
+<path d="M1062 316 L1004 420 L1120 420Z" fill="#348a20" stroke="#1a3e08" stroke-width="4"/>
+<path d="M1062 276 L1016 372 L1108 372Z" fill="#42a628" stroke="#1a3e08" stroke-width="3.5"/>
+<path d="M1062 240 L1026 328 L1098 328Z" fill="#50ba32" stroke="#1a3e08" stroke-width="3"/>
+<path d="M1062 210 L1036 286 L1088 286Z" fill="#64cc40" stroke="#1a3e08" stroke-width="2.5"/>
+<path d="M1062 186 L1046 248 L1078 248Z" fill="#78d852" stroke="#1a3e08" stroke-width="2.5"/>
+<!-- Pine top star -->
+<circle cx="1062" cy="186" r="10" fill="#ffd54f" stroke="#c8a020" stroke-width="2.5"/>
+
+<!-- ═══ FLOWER BEDS ═══ -->
+<!-- Left flower bed (dark outlined) -->
+<path d="M200 482 Q252 465 310 474 Q285 488 240 490 Q218 490 200 482Z" fill="#3a7820" stroke="#1a4010" stroke-width="3" filter="url(#ink)"/>
+<!-- Individual flowers left (hand-drawn style) -->
+<path d="M218 470 Q216 448 220 440" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="218" cy="436" r="15" fill="#e83830" stroke="#881810" stroke-width="3"/>
+<circle cx="218" cy="432" r="6" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<path d="M242 468 Q240 442 244 432" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="242" cy="428" r="13" fill="#9b30b0" stroke="#5a1870" stroke-width="3"/>
+<circle cx="242" cy="424" r="5" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<path d="M265 472 Q263 448 267 436" stroke="#1a8a20" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="265" cy="432" r="12" fill="#e81878" stroke="#880848" stroke-width="3"/>
+<circle cx="265" cy="428" r="5" fill="#fff" stroke="#ccc" stroke-width="1.5"/>
+<path d="M288 470 Q286 445 290 434" stroke="#1a8a20" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="288" cy="430" r="14" fill="#f0a020" stroke="#a86800" stroke-width="3"/>
+<circle cx="288" cy="426" r="5" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<!-- Right flower bed -->
+<path d="M890 478 Q945 460 1008 470 Q982 484 930 486 Q908 486 890 478Z" fill="#3a7820" stroke="#1a4010" stroke-width="3" filter="url(#ink)"/>
+<path d="M908 466 Q906 444 910 434" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="908" cy="430" r="13" fill="#2ecc70" stroke="#0a6830" stroke-width="3"/>
+<circle cx="908" cy="426" r="5" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<path d="M934 464 Q932 440 936 428" stroke="#1a8a20" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="934" cy="424" r="14" fill="#fff" stroke="#aaa" stroke-width="3"/>
+<circle cx="934" cy="420" r="6" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<path d="M960 466 Q958 442 962 430" stroke="#1a8a20" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="960" cy="426" r="12" fill="#e83830" stroke="#881810" stroke-width="3"/>
+<path d="M984 464 Q982 444 986 434" stroke="#1a8a20" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<circle cx="984" cy="430" r="13" fill="#9b30b0" stroke="#5a1870" stroke-width="3"/>
+
+<!-- ═══ HC JUICE CANS (scattered, hand-drawn thick outline) ═══ -->
+<!-- Can 1 red by door step -->
+<rect x="344" y="474" width="28" height="38" rx="6" fill="#c0392b" stroke="#1a1a2e" stroke-width="3.5" filter="url(#ink)"/>
+<rect x="344" y="474" width="28" height="14" rx="5" fill="#e74c3c"/>
+<rect x="348" y="478" width="20" height="6" rx="2" fill="rgba(255,255,255,.4)"/>
+<text x="358" y="498" font-family="'Permanent Marker',cursive" font-size="10" fill="#fff" text-anchor="middle">HC</text>
+<text x="358" y="510" font-family="'Caveat',cursive" font-size="9" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="358" cy="474" rx="14" ry="4.5" fill="#8a1808" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Can 2 blue (fallen over) -->
+<rect x="378" y="484" width="38" height="26" rx="6" fill="#2980b9" stroke="#1a1a2e" stroke-width="3.5" transform="rotate(-18,397,497)" filter="url(#ink)"/>
+<rect x="378" y="484" width="38" height="10" rx="5" fill="#3498db" transform="rotate(-18,397,497)"/>
+<text x="397" y="497" font-family="'Permanent Marker',cursive" font-size="9" fill="#fff" text-anchor="middle" transform="rotate(-18,397,497)">HC JUICE</text>
+<!-- Can 3 green right side -->
+<rect x="852" y="472" width="26" height="36" rx="6" fill="#27ae60" stroke="#1a1a2e" stroke-width="3.5" filter="url(#ink)"/>
+<rect x="852" y="472" width="26" height="12" rx="5" fill="#2ecc71"/>
+<text x="865" y="490" font-family="'Permanent Marker',cursive" font-size="9" fill="#fff" text-anchor="middle">HC</text>
+<text x="865" y="501" font-family="'Caveat',cursive" font-size="9" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="865" cy="472" rx="13" ry="4" fill="#0a6830" stroke="#1a1a2e" stroke-width="2"/>
+
+<!-- ═══ MAILBOX ═══ -->
+<rect x="294" y="438" width="56" height="42" rx="8" fill="#c0392b" stroke="#1a1a2e" stroke-width="4" filter="url(#ink)"/>
+<rect x="294" y="454" width="56" height="12" rx="2" fill="#7b241c"/>
+<rect x="336" y="424" width="8" height="20" rx="2" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="344" y="422" width="24" height="14" rx="3" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="296" y="480" width="10" height="52" rx="3" fill="#8B6914" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Letter sticking out -->
+<rect x="302" y="445" width="28" height="18" rx="2" fill="#f5f0e6" stroke="#1a1a2e" stroke-width="2"/>
+<path d="M302 446 L316 456 L330 446" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+
+<!-- ═══ BICYCLE ═══ -->
+<!-- Wheels -->
+<circle cx="934" cy="472" r="32" fill="none" stroke="#1a1a2e" stroke-width="4.5" filter="url(#ink)"/>
+<circle cx="934" cy="472" r="8" fill="#1a1a2e"/>
+<circle cx="874" cy="472" r="32" fill="none" stroke="#1a1a2e" stroke-width="4.5" filter="url(#ink)"/>
+<circle cx="874" cy="472" r="8" fill="#1a1a2e"/>
+<!-- Spokes -->
+<line x1="874" y1="440" x2="874" y2="504" stroke="#555" stroke-width="2"/>
+<line x1="842" y1="472" x2="906" y2="472" stroke="#555" stroke-width="2"/>
+<line x1="934" y1="440" x2="934" y2="504" stroke="#555" stroke-width="2"/>
+<line x1="902" y1="472" x2="966" y2="472" stroke="#555" stroke-width="2"/>
+<!-- Frame (bold colored) -->
+<path d="M874 472 L904 448 L934 472" fill="none" stroke="#c0392b" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#ink)"/>
+<path d="M904 448 L916 440" fill="none" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<!-- Handlebars -->
+<rect x="912" y="436" width="28" height="6" rx="3" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Seat -->
+<rect x="888" y="440" width="22" height="6" rx="3" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+<rect x="896" y="446" width="6" height="14" rx="2" fill="#1a1a2e"/>
+<!-- HC sticker on bike -->
+<rect x="896" y="458" width="20" height="14" rx="3" fill="#c0392b" stroke="#1a1a2e" stroke-width="2"/>
+<text x="906" y="468" font-family="'Permanent Marker',cursive" font-size="8" fill="#fff" text-anchor="middle">HC</text>
+
+<!-- ═══ BENCH WITH HACKER ═══ -->
+<rect x="200" y="502" width="128" height="14" rx="4" fill="#9a7830" stroke="#1a1a2e" stroke-width="3.5" filter="url(#ink)"/>
+<rect x="208" y="516" width="112" height="8" rx="3" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="3" filter="url(#ink)"/>
+<rect x="204" y="516" width="12" height="32" rx="3" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="316" y="516" width="12" height="32" rx="3" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Person sitting (bold cartoon style) -->
+<circle cx="264" cy="488" r="18" fill="#f5c6a0" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Hair -->
+<path d="M247 480 Q252 468 264 466 Q276 468 281 480 Q272 472 264 474 Q256 472 247 480Z" fill="#3a2008" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Eyes -->
+<circle cx="258" cy="486" r="3" fill="#1a1a2e"/>
+<circle cx="270" cy="486" r="3" fill="#1a1a2e"/>
+<circle cx="259" cy="485" r="1" fill="#fff"/>
+<circle cx="271" cy="485" r="1" fill="#fff"/>
+<!-- Body (hoodie) -->
+<rect x="244" y="506" width="40" height="28" rx="8" fill="#2980b9" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- HC logo on hoodie -->
+<circle cx="264" cy="516" r="7" fill="#c0392b" stroke="#1a1a2e" stroke-width="1.5"/>
+<text x="264" y="519" font-family="'Permanent Marker',cursive" font-size="6" fill="#fff" text-anchor="middle">HC</text>
+<!-- Laptop -->
+<rect x="242" y="516" width="44" height="28" rx="4" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+<rect x="244" y="518" width="40" height="22" rx="2" fill="#2c3e50"/>
+<!-- Code on laptop screen -->
+<rect x="248" y="522" width="24" height="3" rx="1" fill="#27ae60" opacity=".8"/>
+<rect x="248" y="528" width="18" height="3" rx="1" fill="#e67e22" opacity=".7"/>
+<rect x="248" y="534" width="30" height="3" rx="1" fill="#3498db" opacity=".7"/>
+<!-- HC juice can next to person -->
+<rect x="290" y="498" width="18" height="26" rx="5" fill="#c0392b" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="290" y="498" width="18" height="9" rx="4" fill="#e74c3c"/>
+<text x="299" y="512" font-family="'Caveat',cursive" font-size="7" fill="#fff" text-anchor="middle" font-weight="700">HC</text>
+
+<!-- ═══ MAIN BUILDING (large, detailed, bold outlined) ═══ -->
+<!-- Building shadow (thick, cartoonish) -->
+<ellipse cx="600" cy="498" rx="248" ry="22" fill="rgba(0,0,0,.22)" stroke="none"/>
+<!-- Building body -->
+<rect x="264" y="148" width="672" height="360" rx="8" fill="#f0e8d8" stroke="#1a1a2e" stroke-width="6" filter="url(#ink)"/>
+<!-- Brick rows (hand-drawn style) -->
+<path d="M270 174 Q440 170 612 174 Q784 178 930 174" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 198 Q440 194 612 198 Q784 202 930 198" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 222 Q440 218 612 222 Q784 226 930 222" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 246 Q440 242 612 246 Q784 250 930 246" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 270 Q440 266 612 270 Q784 274 930 270" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 294 Q440 290 612 294 Q784 298 930 294" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 318 Q440 314 612 318 Q784 322 930 318" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 342 Q440 338 612 342 Q784 346 930 342" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 366 Q440 362 612 366 Q784 370 930 366" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 390 Q440 386 612 390 Q784 394 930 390" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 414 Q440 410 612 414 Q784 418 930 414" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 438 Q440 434 612 438 Q784 442 930 438" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M270 462 Q440 458 612 462 Q784 466 930 462" fill="none" stroke="#d4c8a8" stroke-width="2.5" stroke-linecap="round"/>
+<!-- Brick vertical joints offset per row -->
+<path d="M380 174 L384 198 M500 174 L504 198 M620 174 L624 198 M740 174 L744 198 M860 174 L864 198" fill="none" stroke="#d4c8a8" stroke-width="1.5"/>
+<path d="M320 198 L324 222 M440 198 L444 222 M560 198 L564 222 M680 198 L684 222 M800 198 L804 222 M920 198 L924 222" fill="none" stroke="#d4c8a8" stroke-width="1.5"/>
+
+<!-- ═══ ROOF (dramatic, hand-drawn) ═══ -->
+<path d="M234 160 Q600 46 966 160 L940 168 L264 168Z" fill="#c0392b" stroke="#1a1a2e" stroke-width="6" filter="url(#ink)"/>
+<!-- Roof tile lines hand-drawn -->
+<path d="M340 158 Q380 142 420 156" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M420 148 Q460 132 500 146" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M500 140 Q540 124 580 138" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M580 136 Q620 120 660 134" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M660 138 Q700 122 740 136" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M740 144 Q780 128 820 142" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M820 152 Q860 136 900 150" fill="none" stroke="#922b21" stroke-width="2.5" stroke-linecap="round"/>
+<!-- Roof edge gutter -->
+<rect x="260" y="158" width="680" height="14" rx="4" fill="#8a1808" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Roof peak detail -->
+<circle cx="600" cy="52" r="14" fill="#ffd54f" stroke="#1a1a2e" stroke-width="3.5"/>
+<line x1="600" y1="52" x2="600" y2="34" stroke="#1a1a2e" stroke-width="2.5"/>
+
+<!-- ═══ CHIMNEY ═══ -->
+<rect x="750" y="62" width="60" height="96" rx="5" fill="#d4c8a8" stroke="#1a1a2e" stroke-width="4.5" filter="url(#ink)"/>
+<rect x="742" y="56" width="76" height="16" rx="4" fill="#c4b498" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Brick on chimney -->
+<path d="M752 76 Q780 73 808 76" fill="none" stroke="#b8a888" stroke-width="2"/>
+<path d="M752 94 Q780 91 808 94" fill="none" stroke="#b8a888" stroke-width="2"/>
+<path d="M752 112 Q780 109 808 112" fill="none" stroke="#b8a888" stroke-width="2"/>
+<!-- Animated smoke puffs -->
+<circle cx="762" cy="44" r="18" fill="#c8c8c8" opacity=".55" stroke="none"/>
+<circle cx="778" cy="28" r="22" fill="#bbb" opacity=".45" stroke="none"/>
+<circle cx="768" cy="12" r="16" fill="#ccc" opacity=".35" stroke="none"/>
+<circle cx="790" cy="8" r="14" fill="#c0c0c0" opacity=".3" stroke="none"/>
+
+<!-- ═══ LEFT WINDOW (big, detailed) ═══ -->
+<rect x="292" y="196" width="172" height="152" rx="6" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="5" filter="url(#ink)"/>
+<!-- Glass panes with light -->
+<rect x="300" y="204" width="74" height="68" rx="2" fill="#a8d8f0" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="382" y="204" width="74" height="68" rx="2" fill="#b8e0f8" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="300" y="280" width="74" height="60" rx="2" fill="#b0d8f5" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="382" y="280" width="74" height="60" rx="2" fill="#a8d8f0" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Light glow from window -->
+<rect x="302" y="206" width="70" height="64" fill="#fffde7" opacity=".45"/>
+<rect x="384" y="206" width="70" height="64" fill="#fffde7" opacity=".35"/>
+<!-- Curtains (thick outline, decorative) -->
+<path d="M300 204 Q316 240 308 348" fill="#fde68a" stroke="#c8a020" stroke-width="3" filter="url(#ink)"/>
+<path d="M464 204 Q448 240 456 348" fill="#fde68a" stroke="#c8a020" stroke-width="3" filter="url(#ink)"/>
+<!-- Window mullion cross -->
+<rect x="374" y="204" width="10" height="136" fill="#1a2a3e"/>
+<rect x="292" y="272" width="172" height="10" fill="#1a2a3e"/>
+<!-- Orpheus visible in window (bold cartoon) -->
+<ellipse cx="338" cy="300" rx="26" ry="32" fill="#e67e22" stroke="#1a1a2e" stroke-width="3"/>
+<ellipse cx="338" cy="280" rx="18" ry="22" fill="#f5c6a0" stroke="#1a1a2e" stroke-width="3"/>
+<ellipse cx="326" cy="274" rx="10" ry="13" fill="#e67e22" stroke="#1a1a2e" stroke-width="2.5"/>
+<ellipse cx="350" cy="274" rx="10" ry="13" fill="#e67e22" stroke="#1a1a2e" stroke-width="2.5"/>
+<circle cx="330" cy="275" r="5" fill="#1a1a2e"/>
+<circle cx="346" cy="275" r="5" fill="#1a1a2e"/>
+<circle cx="331" cy="273" r="2" fill="#fff"/>
+<circle cx="347" cy="273" r="2" fill="#fff"/>
+<path d="M330 288 Q338 296 346 288" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+<!-- HC Juice can in window sill -->
+<rect x="395" y="332" width="26" height="36" rx="7" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="395" y="332" width="26" height="13" rx="6" fill="#e74c3c"/>
+<rect x="399" y="337" width="18" height="5" rx="2" fill="rgba(255,255,255,.4)"/>
+<text x="408" y="353" font-family="'Permanent Marker',cursive" font-size="10" fill="#fff" text-anchor="middle">HC</text>
+<text x="408" y="364" font-family="'Caveat',cursive" font-size="9" fill="#fde68a" text-anchor="middle">JUICE</text>
+<!-- Window sill -->
+<rect x="282" y="346" width="192" height="16" rx="4" fill="#d4c8a8" stroke="#1a1a2e" stroke-width="3.5"/>
+
+<!-- ═══ RIGHT WINDOW ═══ -->
+<rect x="736" y="196" width="172" height="152" rx="6" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="5" filter="url(#ink)"/>
+<rect x="744" y="204" width="74" height="68" rx="2" fill="#a8d8f0" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="826" y="204" width="74" height="68" rx="2" fill="#b8e0f8" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="744" y="280" width="74" height="60" rx="2" fill="#b0d8f5" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="826" y="280" width="74" height="60" rx="2" fill="#a8d8f0" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="746" y="206" width="70" height="64" fill="#fffde7" opacity=".4"/>
+<rect x="828" y="206" width="70" height="64" fill="#fffde7" opacity=".35"/>
+<path d="M744 204 Q760 240 752 348" fill="#fecaca" stroke="#c0392b" stroke-width="3" filter="url(#ink)"/>
+<path d="M908 204 Q892 240 900 348" fill="#fecaca" stroke="#c0392b" stroke-width="3" filter="url(#ink)"/>
+<rect x="818" y="204" width="10" height="136" fill="#1a2a3e"/>
+<rect x="736" y="272" width="172" height="10" fill="#1a2a3e"/>
+<!-- Plant in right window -->
+<rect x="760" y="320" width="32" height="36" rx="5" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="756" y="318" width="40" height="8" rx="3" fill="#8a1808" stroke="#1a1a2e" stroke-width="2"/>
+<path d="M776 318 Q768 298 760 280 Q772 290 776 310" fill="#27ae60" stroke="#1a1a2e" stroke-width="2"/>
+<path d="M776 318 Q784 298 792 280 Q780 290 776 310" fill="#2ecc71" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Second HC juice can right window -->
+<rect x="846" y="332" width="24" height="34" rx="7" fill="#27ae60" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="846" y="332" width="24" height="12" rx="6" fill="#2ecc71"/>
+<text x="858" y="352" font-family="'Permanent Marker',cursive" font-size="9" fill="#fff" text-anchor="middle">HC</text>
+<text x="858" y="362" font-family="'Caveat',cursive" font-size="8" fill="#fde68a" text-anchor="middle">JUICE</text>
+<rect x="726" y="346" width="192" height="16" rx="4" fill="#d4c8a8" stroke="#1a1a2e" stroke-width="3.5"/>
+
+<!-- ═══ MAIN DOOR (bold, detailed) ═══ -->
+<rect x="502" y="292" width="196" height="222" rx="8" fill="#8B6914" stroke="#1a1a2e" stroke-width="6" filter="url(#ink)"/>
+<!-- Door panels (raised effect) -->
+<rect x="514" y="306" width="74" height="72" rx="4" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="612" y="306" width="74" height="72" rx="4" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="514" y="390" width="74" height="80" rx="4" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="612" y="390" width="74" height="80" rx="4" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Door panel details (wood grain lines) -->
+<line x1="520" y1="320" x2="582" y2="320" stroke="#5a3e0a" stroke-width="1.5" opacity=".5"/>
+<line x1="520" y1="334" x2="582" y2="334" stroke="#5a3e0a" stroke-width="1.5" opacity=".4"/>
+<line x1="520" y1="348" x2="582" y2="348" stroke="#5a3e0a" stroke-width="1.5" opacity=".4"/>
+<!-- Door knocker -->
+<circle cx="686" cy="418" r="14" fill="#d4a017" stroke="#1a1a2e" stroke-width="3.5"/>
+<circle cx="686" cy="418" r="8" fill="#f0c030" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Door handle -->
+<rect x="502" y="450" width="18" height="8" rx="4" fill="#d4a017" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Door arch (semi-circular) -->
+<path d="M496 296 Q600 218 704 296 L704 296 L496 296Z" fill="#c4b498" stroke="#1a1a2e" stroke-width="5" filter="url(#ink)"/>
+<!-- Arch window -->
+<ellipse cx="600" cy="262" rx="54" ry="36" fill="#a8d8f0" stroke="#1a1a2e" stroke-width="3"/>
+<line x1="600" y1="226" x2="600" y2="298" stroke="#1a1a2e" stroke-width="2.5"/>
+<path d="M546 262 Q600 250 654 262" fill="none" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Door step -->
+<rect x="482" y="508" width="236" height="14" rx="4" fill="#c4b498" stroke="#1a1a2e" stroke-width="3.5" filter="url(#ink)"/>
+<rect x="468" y="518" width="264" height="12" rx="4" fill="#b8a888" stroke="#1a1a2e" stroke-width="3" filter="url(#ink)"/>
+<!-- Welcome mat -->
+<rect x="502" y="506" width="196" height="18" rx="5" fill="#8B6914" stroke="#1a1a2e" stroke-width="3"/>
+<text x="600" y="519" font-family="'Permanent Marker',cursive" font-size="11" fill="#fde68a" text-anchor="middle">WELCOME HACKER</text>
+
+<!-- ═══ SIGN (above door, big and bold) ═══ -->
+<rect x="452" y="158" width="296" height="68" rx="8" fill="#1a1a2e" stroke="#c0392b" stroke-width="5" filter="url(#ink)"/>
+<!-- Sign corner screws -->
+<circle cx="464" cy="170" r="7" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="736" cy="170" r="7" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="464" cy="214" r="7" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="736" cy="214" r="7" fill="#555" stroke="#333" stroke-width="2"/>
+<!-- Sign text -->
+<text x="600" y="194" font-family="'Permanent Marker',cursive" font-size="26" fill="#e67e22" text-anchor="middle">SAFEHOUSE</text>
+<text x="600" y="218" font-family="'Caveat',cursive" font-size="16" fill="#fde68a" text-anchor="middle">HQ — Hackers Only 🔒</text>
+
+<!-- ═══ DECORATIVE ELEMENTS ═══ -->
+<!-- String lights on building front -->
+<path d="M264 162 Q380 172 500 162 Q620 152 740 162 Q860 172 936 162" fill="none" stroke="#7a5c0a" stroke-width="3" stroke-linecap="round"/>
+<circle cx="300" cy="170" r="7" fill="#fde68a" stroke="#c8a020" stroke-width="2"/>
+<circle cx="360" cy="163" r="7" fill="#fecaca" stroke="#c0392b" stroke-width="2"/>
+<circle cx="420" cy="170" r="7" fill="#bbf7d0" stroke="#27ae60" stroke-width="2"/>
+<circle cx="480" cy="163" r="7" fill="#fde68a" stroke="#c8a020" stroke-width="2"/>
+<circle cx="600" cy="155" r="7" fill="#fecaca" stroke="#c0392b" stroke-width="2"/>
+<circle cx="720" cy="163" r="7" fill="#fde68a" stroke="#c8a020" stroke-width="2"/>
+<circle cx="780" cy="170" r="7" fill="#bbf7d0" stroke="#27ae60" stroke-width="2"/>
+<circle cx="840" cy="163" r="7" fill="#fecaca" stroke="#c0392b" stroke-width="2"/>
+<circle cx="900" cy="170" r="7" fill="#fde68a" stroke="#c8a020" stroke-width="2"/>
+
+<!-- Red balloon on door -->
+<line x1="686" y1="164" x2="682" y2="88" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="682" cy="68" rx="24" ry="30" fill="#c0392b" stroke="#1a1a2e" stroke-width="3.5" filter="url(#ink)"/>
+<path d="M672 98 Q682 106 692 98" fill="none" stroke="#1a1a2e" stroke-width="2.5"/>
+<text x="682" y="70" font-family="'Permanent Marker',cursive" font-size="10" fill="#fff" text-anchor="middle">HC</text>
+
+<!-- Birds (hand-drawn) -->
+<path d="M220 96 Q228 88 236 96 Q232 92 228 94 Q224 92 220 96Z" fill="#1a1a2e"/>
+<path d="M260 78 Q270 68 280 78 Q274 74 270 76 Q266 74 260 78Z" fill="#1a1a2e"/>
+<path d="M450 54 Q458 46 466 54 Q462 50 458 52 Q454 50 450 54Z" fill="#1a1a2e"/>
+
+<!-- Handwritten annotation arrows -->
+<path d="M260 170 Q240 155 216 140" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 4"/>
+<path d="M216 140 L210 150 M216 140 L226 146" stroke="#c0392b" stroke-width="3" stroke-linecap="round" fill="none"/>
+<text x="148" y="134" font-family="'Permanent Marker',cursive" font-size="16" fill="#c0392b" transform="rotate(-6,148,134)">our HQ!</text>
+<!-- Enter annotation -->
+<path d="M510 508 Q490 534 468 558" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 4"/>
+<path d="M468 558 L462 548 M468 558 L476 552" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+<text x="340" y="576" font-family="'Permanent Marker',cursive" font-size="15" fill="#1a1a2e">click door to enter →</text>
+</svg>
+
+        <!-- ENTER BUTTON over the door -->
+        <button class="view-btn" id="enter-btn" style="bottom:18%;left:50%;transform:translateX(-50%);"
+          onclick="enterBuilding()">
+          🚪 Enter the Safehouse HQ →
+        </button>
+      </div>
+
+      <!-- ═══ INSIDE VIEW ═══ -->
+      <div id="view-inside" style="position:absolute;inset:0;z-index:1;display:none;">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 1200 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="sk" x="-2%" y="-2%" width="104%" height="104%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.025 0.05" numOctaves="3" seed="5" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs>
+
+<!-- WALL -->
+<rect x="0" y="0" width="1200" height="680" fill="#f0e8d8"/>
+<!-- Wallpaper upper section -->
+<rect x="0" y="0" width="1200" height="430" fill="#ede3cf"/>
+<!-- Horizontal wallpaper lines hand-drawn -->
+<path d="M0 65 Q300 60 600 65 Q900 70 1200 65" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<path d="M0 130 Q300 125 600 130 Q900 135 1200 130" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<path d="M0 195 Q300 190 600 195 Q900 200 1200 195" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<path d="M0 260 Q300 255 600 260 Q900 265 1200 260" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<path d="M0 325 Q300 320 600 325 Q900 330 1200 325" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<path d="M0 390 Q300 385 600 390 Q900 395 1200 390" fill="none" stroke="#d4c8a8" stroke-width="1.5" opacity=".6"/>
+<!-- Chair rail -->
+<rect x="0" y="430" width="1200" height="14" fill="#c9b48a" stroke="#8a6030" stroke-width="2"/>
+<!-- Wainscoting lower -->
+<rect x="0" y="444" width="1200" height="220" fill="#e8dfc8"/>
+<!-- Wainscot panels (bold outlined) -->
+<rect x="18" y="454" width="196" height="196" rx="5" fill="none" stroke="#c9b48a" stroke-width="4"/>
+<rect x="28" y="464" width="176" height="176" rx="3" fill="none" stroke="#d4c8a8" stroke-width="2"/>
+<rect x="232" y="454" width="196" height="196" rx="5" fill="none" stroke="#c9b48a" stroke-width="4"/>
+<rect x="242" y="464" width="176" height="176" rx="3" fill="none" stroke="#d4c8a8" stroke-width="2"/>
+<rect x="446" y="454" width="196" height="196" rx="5" fill="none" stroke="#c9b48a" stroke-width="4"/>
+<rect x="660" y="454" width="196" height="196" rx="5" fill="none" stroke="#c9b48a" stroke-width="4"/>
+<rect x="874" y="454" width="196" height="196" rx="5" fill="none" stroke="#c9b48a" stroke-width="4"/>
+<!-- Baseboard (thick bold) -->
+<rect x="0" y="652" width="1200" height="28" fill="#c9b48a" stroke="#8a6030" stroke-width="3"/>
+
+<!-- FLOOR (hardwood, hand-drawn feel) -->
+<rect x="0" y="444" width="1200" height="208" fill="#c4a870" stroke="none"/>
+<!-- Floor planks hand-drawn -->
+<path d="M0 468 Q200 464 400 468 Q600 472 800 468 Q1000 464 1200 468" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 492 Q200 488 400 492 Q600 496 800 492 Q1000 488 1200 492" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 516 Q200 512 400 516 Q600 520 800 516 Q1000 512 1200 516" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 540 Q200 536 400 540 Q600 544 800 540 Q1000 536 1200 540" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 564 Q200 560 400 564 Q600 568 800 564 Q1000 560 1200 564" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 588 Q200 584 400 588 Q600 592 800 588 Q1000 584 1200 588" fill="none" stroke="#b8995e" stroke-width="2"/>
+<path d="M0 612 Q200 608 400 612 Q600 616 800 612 Q1000 608 1200 612" fill="none" stroke="#b8995e" stroke-width="2"/>
+<line x1="188" y1="444" x2="188" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+<line x1="376" y1="444" x2="376" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+<line x1="564" y1="444" x2="564" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+<line x1="752" y1="444" x2="752" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+<line x1="940" y1="444" x2="940" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+<line x1="1128" y1="444" x2="1128" y2="652" stroke="#b8995e" stroke-width="1.5"/>
+
+<!-- ═══ WINDOW (garden view, large + bold) ═══ -->
+<rect x="330" y="18" width="540" height="392" rx="6" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="7" filter="url(#sk)"/>
+<!-- Sky in window -->
+<rect x="342" y="30" width="516" height="368" fill="#87CEEB"/>
+<rect x="342" y="30" width="516" height="160" fill="#a8d8f0"/>
+<!-- Garden ground -->
+<path d="M342 280 Q450 260 600 268 Q750 276 858 260 L858 398 L342 398Z" fill="#4a9028"/>
+<path d="M342 310 Q450 295 600 302 Q750 310 858 295 L858 398 L342 398Z" fill="#5aaa32"/>
+<!-- Trees in garden -->
+<rect x="388" y="148" width="20" height="142" rx="4" fill="#6b3a1a" stroke="#3a1e08" stroke-width="3"/>
+<ellipse cx="398" cy="136" rx="66" ry="82" fill="#2a6e18" stroke="#1a3e08" stroke-width="4"/>
+<ellipse cx="372" cy="162" rx="44" ry="58" fill="#348a20" stroke="#1a3e08" stroke-width="3"/>
+<ellipse cx="424" cy="158" rx="48" ry="56" fill="#42a628" stroke="#1a3e08" stroke-width="3"/>
+<ellipse cx="398" cy="116" rx="34" ry="42" fill="#58be34" stroke="#1a3e08" stroke-width="2.5"/>
+<rect x="696" y="162" width="18" height="128" rx="4" fill="#6b3a1a" stroke="#3a1e08" stroke-width="3"/>
+<ellipse cx="705" cy="150" rx="62" ry="76" fill="#2a6e18" stroke="#1a3e08" stroke-width="4"/>
+<ellipse cx="680" cy="174" rx="42" ry="54" fill="#348a20" stroke="#1a3e08" stroke-width="3"/>
+<ellipse cx="728" cy="170" rx="44" ry="52" fill="#42a628" stroke="#1a3e08" stroke-width="3"/>
+<!-- Flowers in garden -->
+<path d="M470 272 Q468 248 472 236" stroke="#1a8a20" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+<circle cx="470" cy="232" r="17" fill="#e83830" stroke="#881810" stroke-width="3.5"/>
+<circle cx="470" cy="228" r="7" fill="#ffd54f" stroke="#c8a020" stroke-width="2"/>
+<path d="M500 268 Q498 244 502 230" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="500" cy="226" r="14" fill="#9b30b0" stroke="#5a1870" stroke-width="3"/>
+<path d="M532 270 Q530 248 534 234" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="532" cy="230" r="15" fill="#fff" stroke="#aaa" stroke-width="3.5"/>
+<circle cx="532" cy="226" r="6" fill="#ffd54f" stroke="#c8a020" stroke-width="1.5"/>
+<path d="M620 266 Q618 244 622 230" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="620" cy="226" r="16" fill="#f0a020" stroke="#a86800" stroke-width="3.5"/>
+<path d="M654 268 Q652 248 656 232" stroke="#1a8a20" stroke-width="3" stroke-linecap="round" fill="none"/>
+<circle cx="654" cy="228" r="14" fill="#e81878" stroke="#880848" stroke-width="3"/>
+<!-- Butterfly in window -->
+<ellipse cx="574" cy="198" rx="18" ry="12" fill="#e67e22" opacity=".9" stroke="#c85a00" stroke-width="2" transform="rotate(-20,574,198)"/>
+<ellipse cx="598" cy="198" rx="18" ry="12" fill="#e67e22" opacity=".9" stroke="#c85a00" stroke-width="2" transform="rotate(20,598,198)"/>
+<line x1="586" y1="192" x2="586" y2="206" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Clouds in window sky -->
+<path d="M360 68 Q374 52 396 55 Q403 42 422 46 Q436 36 452 46 Q464 40 472 52 Q482 66 468 76 Q452 86 432 80 Q412 90 390 82 Q368 90 356 78 Z" fill="#fff" opacity=".9" stroke="#e8e8e8" stroke-width="1.5"/>
+<path d="M640 52 Q654 38 672 42 Q680 30 698 34 Q712 24 726 34 Q738 26 746 40 Q756 54 744 64 Q728 74 708 66 Q686 76 664 68 Q642 76 632 64 Z" fill="#fffde7" opacity=".85" stroke="#e8e8e0" stroke-width="1.5"/>
+<!-- Window frame (bold cross) -->
+<rect x="330" y="18" width="540" height="392" rx="6" fill="none" stroke="#1a1a2e" stroke-width="8"/>
+<rect x="594" y="30" width="14" height="368" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="342" y="202" width="516" height="14" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Window sill (thick) -->
+<rect x="314" y="406" width="572" height="24" rx="5" fill="#d4c8a8" stroke="#1a1a2e" stroke-width="5"/>
+<rect x="314" y="428" width="572" height="10" rx="3" fill="#c9b48a" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Curtains (thick bold outline, decorative) -->
+<path d="M330 18 Q360 120 346 406" fill="#fde68a" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<path d="M870 18 Q840 120 854 406" fill="#fde68a" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<!-- Curtain rope ties -->
+<circle cx="346" cy="220" r="10" fill="#c8a020" stroke="#1a1a2e" stroke-width="3"/>
+<circle cx="854" cy="220" r="10" fill="#c8a020" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Plant on sill (bold) -->
+<rect x="352" y="390" width="38" height="34" rx="6" fill="#c0392b" stroke="#1a1a2e" stroke-width="4"/>
+<rect x="346" y="386" width="50" height="10" rx="3" fill="#8a1808" stroke="#1a1a2e" stroke-width="3"/>
+<path d="M371 386 Q359 364 350 344 Q366 356 371 376" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<path d="M371 386 Q383 364 392 344 Q376 356 371 376" fill="#2ecc71" stroke="#1a1a2e" stroke-width="2.5"/>
+<path d="M371 386 Q370 362 371 340 Q374 362 371 386" fill="#27ae60" stroke="#1a1a2e" stroke-width="2"/>
+<!-- HC Juice cans on sill (bold illustrated) -->
+<rect x="840" y="386" width="28" height="40" rx="7" fill="#c0392b" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<rect x="840" y="386" width="28" height="14" rx="6" fill="#e74c3c"/>
+<rect x="844" y="391" width="20" height="6" rx="2" fill="rgba(255,255,255,.4)"/>
+<text x="854" y="406" font-family="'Permanent Marker',cursive" font-size="11" fill="#fff" text-anchor="middle">HC</text>
+<text x="854" y="419" font-family="'Caveat',cursive" font-size="10" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="854" cy="386" rx="14" ry="4.5" fill="#8a1808" stroke="#1a1a2e" stroke-width="2"/>
+<rect x="876" y="390" width="26" height="36" rx="7" fill="#27ae60" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="876" y="390" width="26" height="13" rx="6" fill="#2ecc71"/>
+<text x="889" y="408" font-family="'Permanent Marker',cursive" font-size="10" fill="#fff" text-anchor="middle">HC</text>
+<text x="889" y="419" font-family="'Caveat',cursive" font-size="9" fill="#fde68a" text-anchor="middle">JUICE</text>
+
+<!-- ═══ BOOKSHELF (left wall, big detailed) ═══ -->
+<rect x="0" y="0" width="172" height="444" rx="0" fill="#8B6914" stroke="#4a3500" stroke-width="5" filter="url(#sk)"/>
+<rect x="8" y="8" width="156" height="428" rx="3" fill="#9a7830"/>
+<!-- Shelf boards (bold) -->
+<rect x="0" y="8" width="172" height="12" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+<rect x="0" y="104" width="172" height="12" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+<rect x="0" y="200" width="172" height="12" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+<rect x="0" y="296" width="172" height="12" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+<rect x="0" y="392" width="172" height="12" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+<!-- Right trim -->
+<rect x="164" y="0" width="8" height="444" fill="#6b4f10" stroke="#4a3500" stroke-width="2"/>
+
+<!-- BOOKS (bold outlined, thick strokes, hand-drawn) -->
+<!-- Row 1 -->
+<rect x="12" y="20" width="22" height="78" rx="3" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="36" y="26" width="16" height="72" rx="3" fill="#2980b9" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="54" y="16" width="24" height="82" rx="3" fill="#e67e22" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="80" y="22" width="18" height="76" rx="3" fill="#27ae60" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="100" y="18" width="26" height="80" rx="3" fill="#8e44ad" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="128" y="24" width="16" height="74" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="146" y="16" width="18" height="82" rx="3" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Book spine text (hand-drawn feel) -->
+<text x="23" y="72" font-family="'Caveat',cursive" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" transform="rotate(90,23,72)">HACK CLUB</text>
+<text x="66" y="68" font-family="'Caveat',cursive" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" transform="rotate(90,66,68)">JS BASICS</text>
+<text x="113" y="70" font-family="'Caveat',cursive" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" transform="rotate(90,113,70)">RUST BOOK</text>
+<!-- Row 2 -->
+<rect x="12" y="118" width="24" height="76" rx="3" fill="#2980b9" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="38" y="122" width="16" height="72" rx="3" fill="#e67e22" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="56" y="116" width="22" height="78" rx="3" fill="#27ae60" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="80" y="120" width="28" height="74" rx="3" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="110" y="118" width="18" height="76" rx="3" fill="#8e44ad" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="130" y="122" width="28" height="72" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Globe (bold illustrated) -->
+<circle cx="52" cy="258" r="30" fill="#2980b9" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<ellipse cx="52" cy="258" rx="30" ry="10" fill="none" stroke="#87ceeb" stroke-width="2.5"/>
+<line x1="52" y1="228" x2="52" y2="288" stroke="#87ceeb" stroke-width="2.5"/>
+<ellipse cx="38" cy="248" rx="10" ry="15" fill="#27ae60" opacity=".75" stroke="#1a3e08" stroke-width="1.5"/>
+<ellipse cx="66" cy="264" rx="8" ry="12" fill="#27ae60" opacity=".65" stroke="#1a3e08" stroke-width="1.5"/>
+<rect x="40" y="286" width="24" height="6" rx="2" fill="#6b4f10" stroke="#1a1a2e" stroke-width="2"/>
+<!-- Trophy (bold) -->
+<rect x="100" y="220" width="20" height="48" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="3.5"/>
+<ellipse cx="110" cy="218" rx="28" ry="20" fill="#d4a017" stroke="#1a1a2e" stroke-width="3.5" filter="url(#sk)"/>
+<circle cx="110" cy="206" r="12" fill="#f0c030" stroke="#1a1a2e" stroke-width="3"/>
+<text x="110" y="211" font-family="'Permanent Marker',cursive" font-size="12" fill="#8a6000" text-anchor="middle">★</text>
+<rect x="96" y="266" width="28" height="7" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="2"/>
+<!-- HC Juice on shelf (bold) -->
+<rect x="12" y="214" width="22" height="32" rx="6" fill="#c0392b" stroke="#1a1a2e" stroke-width="3.5" filter="url(#sk)"/>
+<rect x="12" y="214" width="22" height="11" rx="5" fill="#e74c3c"/>
+<rect x="15" y="218" width="16" height="5" rx="2" fill="rgba(255,255,255,.4)"/>
+<text x="23" y="234" font-family="'Permanent Marker',cursive" font-size="9" fill="#fff" text-anchor="middle">HC</text>
+<text x="23" y="244" font-family="'Caveat',cursive" font-size="8" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="23" cy="214" rx="11" ry="3.5" fill="#8a1808" stroke="#1a1a2e" stroke-width="2"/>
+<rect x="38" y="218" width="20" height="28" rx="6" fill="#2980b9" stroke="#1a1a2e" stroke-width="3" filter="url(#sk)"/>
+<rect x="38" y="218" width="20" height="10" rx="5" fill="#3498db"/>
+<text x="48" y="235" font-family="'Permanent Marker',cursive" font-size="8" fill="#fff" text-anchor="middle">HC</text>
+<text x="48" y="244" font-family="'Caveat',cursive" font-size="7" fill="#fde68a" text-anchor="middle">JUICE</text>
+<!-- Row 4 books -->
+<rect x="12" y="308" width="18" height="78" rx="3" fill="#27ae60" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="32" y="304" width="26" height="82" rx="3" fill="#e67e22" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="60" y="310" width="16" height="76" rx="3" fill="#2980b9" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="78" y="306" width="22" height="80" rx="3" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="102" y="308" width="20" height="78" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="124" y="306" width="26" height="80" rx="3" fill="#8e44ad" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Photo frame -->
+<rect x="14" y="404" width="60" height="44" rx="4" fill="#8B6914" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="20" y="410" width="48" height="32" rx="2" fill="#87ceeb"/>
+<circle cx="44" cy="428" r="12" fill="#f5c6a0" stroke="#1a1a2e" stroke-width="2"/>
+<rect x="32" y="434" width="24" height="10" rx="2" fill="#2980b9" stroke="#1a1a2e" stroke-width="1.5"/>
+<!-- Plant (bold illustrated) -->
+<rect x="92" y="408" width="44" height="44" rx="6" fill="#c0392b" stroke="#1a1a2e" stroke-width="4"/>
+<rect x="84" y="404" width="60" height="10" rx="4" fill="#8a1808" stroke="#1a1a2e" stroke-width="3"/>
+<path d="M114 404 Q102 378 92 354 Q108 368 114 390" fill="#27ae60" stroke="#1a1a2e" stroke-width="3"/>
+<path d="M114 404 Q126 378 136 354 Q120 368 114 390" fill="#2ecc71" stroke="#1a1a2e" stroke-width="3"/>
+<path d="M114 404 Q112 376 114 350 Q118 376 114 404" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Sticky note on shelf -->
+<rect x="12" y="312" width="44" height="32" rx="3" fill="#fde68a" stroke="#d4a017" stroke-width="2.5" transform="rotate(-4,34,328)" filter="url(#sk)"/>
+<text x="34" y="326" font-family="'Permanent Marker',cursive" font-size="10" fill="#1a1a2e" text-anchor="middle" transform="rotate(-4,34,328)">ship it!</text>
+<text x="34" y="338" font-family="'Caveat',cursive" font-size="10" fill="#c0392b" text-anchor="middle" transform="rotate(-4,34,328)">🚀 always</text>
+
+<!-- ═══ DESK (bold illustrated) ═══ -->
+<rect x="470" y="444" width="472" height="52" rx="7" fill="#9a7830" stroke="#1a1a2e" stroke-width="5.5" filter="url(#sk)"/>
+<rect x="470" y="444" width="472" height="10" rx="7" fill="#b8995e"/>
+<!-- Desk edge scuffs/character -->
+<path d="M530 470 Q544 464 558 470" fill="none" stroke="#7a5c0a" stroke-width="2" opacity=".5"/>
+<path d="M680 462 Q692 456 704 462" fill="none" stroke="#7a5c0a" stroke-width="2" opacity=".4"/>
+<path d="M820 468 Q830 462 840 468" fill="none" stroke="#7a5c0a" stroke-width="2" opacity=".4"/>
+<!-- Desk legs -->
+<rect x="484" y="492" width="20" height="188" rx="5" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="4"/>
+<rect x="918" y="492" width="20" height="188" rx="5" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="4"/>
+<rect x="490" y="650" width="444" height="16" rx="5" fill="#6b4f10" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Desk mat -->
+<rect x="486" y="452" width="314" height="42" rx="5" fill="#1a2a3e" stroke="#555" stroke-width="3" filter="url(#sk)"/>
+
+<!-- ═══ MONITOR (big, detailed) ═══ -->
+<rect x="538" y="248" width="264" height="182" rx="10" fill="#1a2a3e" stroke="#1a1a2e" stroke-width="5" filter="url(#sk)"/>
+<rect x="548" y="258" width="244" height="162" rx="6" fill="#2c3e50"/>
+<!-- Code editor chrome bar -->
+<rect x="548" y="258" width="244" height="20" rx="6" fill="#1e2d40"/>
+<!-- Traffic lights on chrome -->
+<circle cx="562" cy="268" r="6" fill="#e74c3c" stroke="#1a1a2e" stroke-width="1.5"/>
+<circle cx="578" cy="268" r="6" fill="#f0b800" stroke="#1a1a2e" stroke-width="1.5"/>
+<circle cx="594" cy="268" r="6" fill="#27ae60" stroke="#1a1a2e" stroke-width="1.5"/>
+<text x="650" y="272" font-family="'Caveat',cursive" font-size="11" fill="rgba(255,255,255,.5)" text-anchor="middle">hq.js — safehouse</text>
+<!-- Code lines (Siege style bright colors) -->
+<text x="558" y="298" font-family="'Caveat',cursive" font-size="13" fill="#e67e22">function ship() &#123;</text>
+<text x="570" y="316" font-family="'Caveat',cursive" font-size="13" fill="#27ae60">  const project = build();</text>
+<text x="570" y="334" font-family="'Caveat',cursive" font-size="13" fill="#3498db">  addCoins(500);</text>
+<text x="570" y="352" font-family="'Caveat',cursive" font-size="13" fill="#9b59b6">  toast("🚀 shipped!");</text>
+<text x="558" y="370" font-family="'Caveat',cursive" font-size="13" fill="#e67e22">&#125;</text>
+<text x="558" y="392" font-family="'Caveat',cursive" font-size="11" fill="rgba(255,255,255,.3)">// TODO: drink HC juice</text>
+<text x="558" y="410" font-family="'Caveat',cursive" font-size="11" fill="rgba(255,255,255,.2)">// always be shipping</text>
+<!-- Cursor blink -->
+<rect x="600" y="414" width="10" height="14" rx="2" fill="#fff" opacity=".8"/>
+<!-- Monitor stand -->
+<rect x="640" y="430" width="40" height="16" rx="4" fill="#2c3e50" stroke="#1a1a2e" stroke-width="3"/>
+<rect x="610" y="444" width="100" height="10" rx="4" fill="#2c3e50" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Sticky notes on monitor bezel (hand-drawn tilt) -->
+<rect x="762" y="258" width="52" height="46" rx="3" fill="#fde68a" stroke="#d4a017" stroke-width="3" transform="rotate(6,788,281)" filter="url(#sk)"/>
+<text x="788" y="277" font-family="'Permanent Marker',cursive" font-size="10" fill="#1a1a2e" text-anchor="middle" transform="rotate(6,788,281)">fix bug</text>
+<text x="788" y="290" font-family="'Caveat',cursive" font-size="10" fill="#c0392b" text-anchor="middle" transform="rotate(6,788,281)">before BBQ!!</text>
+<circle cx="788" cy="258" r="4" fill="#c0392b" stroke="#1a1a2e" stroke-width="1.5" transform="rotate(6,788,281)"/>
+<rect x="496" y="258" width="46" height="42" rx="3" fill="#fecaca" stroke="#c0392b" stroke-width="3" transform="rotate(-5,519,279)" filter="url(#sk)"/>
+<text x="519" y="275" font-family="'Permanent Marker',cursive" font-size="11" fill="#1a1a2e" text-anchor="middle" transform="rotate(-5,519,279)">ship it!</text>
+<text x="519" y="290" font-family="'Caveat',cursive" font-size="10" fill="#c0392b" text-anchor="middle" transform="rotate(-5,519,279)">🚀 TODAY</text>
+<circle cx="519" cy="258" r="4" fill="#2980b9" stroke="#1a1a2e" stroke-width="1.5" transform="rotate(-5,519,279)"/>
+
+<!-- ═══ KEYBOARD (bold illustrated) ═══ -->
+<rect x="506" y="458" width="244" height="28" rx="7" fill="#c8c8c0" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<!-- Key rows -->
+<rect x="514" y="462" width="228" height="7" rx="2" fill="#aaa" opacity=".4"/>
+<rect x="514" y="472" width="228" height="7" rx="2" fill="#aaa" opacity=".35"/>
+<rect x="520" y="479" width="216" height="4" rx="2" fill="#aaa" opacity=".25"/>
+<!-- Special keys highlighted (Hack Club style) -->
+<rect x="756" y="462" width="44" height="22" rx="4" fill="#c0392b" stroke="#1a1a2e" stroke-width="2"/>
+<text x="778" y="476" font-family="'Caveat',cursive" font-size="9" fill="#fff" text-anchor="middle">SHIP</text>
+
+<!-- ═══ MOUSE ═══ -->
+<rect x="768" y="456" width="46" height="34" rx="18" fill="#c8c8c0" stroke="#1a1a2e" stroke-width="3.5" filter="url(#sk)"/>
+<line x1="791" y1="456" x2="791" y2="490" stroke="#999" stroke-width="2"/>
+<rect x="784" y="458" width="14" height="10" rx="4" fill="#999"/>
+
+<!-- ═══ HC JUICE CANS ON DESK (big, prominent!) ═══ -->
+<!-- Can 1 (red, upright) -->
+<rect x="818" y="432" width="32" height="46" rx="9" fill="#c0392b" stroke="#1a1a2e" stroke-width="4.5" filter="url(#sk)"/>
+<rect x="818" y="432" width="32" height="16" rx="8" fill="#e74c3c"/>
+<rect x="824" y="437" width="20" height="7" rx="3" fill="rgba(255,255,255,.4)"/>
+<text x="834" y="456" font-family="'Permanent Marker',cursive" font-size="12" fill="#fff" text-anchor="middle">HC</text>
+<text x="834" y="470" font-family="'Caveat',cursive" font-size="11" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="834" cy="432" rx="16" ry="5" fill="#8a1808" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Can 2 (green, slightly tilted) -->
+<rect x="856" y="436" width="28" height="42" rx="9" fill="#27ae60" stroke="#1a1a2e" stroke-width="4" transform="rotate(8,870,457)" filter="url(#sk)"/>
+<rect x="856" y="436" width="28" height="14" rx="8" fill="#2ecc71" transform="rotate(8,870,457)"/>
+<rect x="860" y="440" width="20" height="6" rx="3" fill="rgba(255,255,255,.4)" transform="rotate(8,870,457)"/>
+<text x="870" y="457" font-family="'Permanent Marker',cursive" font-size="11" fill="#fff" text-anchor="middle" transform="rotate(8,870,457)">HC</text>
+<text x="870" y="469" font-family="'Caveat',cursive" font-size="10" fill="#fde68a" text-anchor="middle" transform="rotate(8,870,457)">JUICE</text>
+
+<!-- ═══ COFFEE MUG ═══ -->
+<rect x="900" y="436" width="40" height="44" rx="7" fill="#fff" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<rect x="900" y="436" width="40" height="16" rx="6" fill="#c0392b"/>
+<path d="M940 444 Q956 444 956 458 Q956 472 940 472" fill="none" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<!-- Steam puffs -->
+<path d="M912 432 Q908 418 914 406" fill="none" stroke="rgba(180,180,180,.7)" stroke-width="4" stroke-linecap="round"/>
+<path d="M924 430 Q920 416 926 404" fill="none" stroke="rgba(180,180,180,.6)" stroke-width="3" stroke-linecap="round"/>
+<!-- HC logo on mug -->
+<text x="920" y="462" font-family="'Permanent Marker',cursive" font-size="10" fill="#1a1a2e" text-anchor="middle">HC ☕</text>
+
+<!-- ═══ PENCIL CUP ═══ -->
+<rect x="952" y="428" width="34" height="52" rx="6" fill="#2980b9" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<!-- Pencils sticking out -->
+<line x1="961" y1="428" x2="958" y2="396" stroke="#fde68a" stroke-width="5" stroke-linecap="round"/>
+<circle cx="957" cy="393" r="5" fill="#fde68a" stroke="#1a1a2e" stroke-width="2"/>
+<line x1="969" y1="428" x2="968" y2="390" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
+<circle cx="967" cy="387" r="5" fill="#c0392b" stroke="#1a1a2e" stroke-width="2"/>
+<line x1="977" y1="428" x2="975" y2="398" stroke="#27ae60" stroke-width="5" stroke-linecap="round"/>
+<circle cx="974" cy="395" r="5" fill="#27ae60" stroke="#1a1a2e" stroke-width="2"/>
+
+<!-- ═══ NOTEBOOK ON DESK ═══ -->
+<rect x="486" y="454" width="52" height="38" rx="4" fill="#f5f0e6" stroke="#1a1a2e" stroke-width="3.5" transform="rotate(-10,512,473)" filter="url(#sk)"/>
+<rect x="488" y="458" width="44" height="3" rx="1" fill="rgba(31,45,61,.2)" transform="rotate(-10,512,473)"/>
+<rect x="488" y="464" width="36" height="3" rx="1" fill="rgba(31,45,61,.15)" transform="rotate(-10,512,473)"/>
+<rect x="488" y="470" width="40" height="3" rx="1" fill="rgba(31,45,61,.15)" transform="rotate(-10,512,473)"/>
+<!-- HC doodle on notebook -->
+<text x="516" y="480" font-family="'Permanent Marker',cursive" font-size="9" fill="#c0392b" text-anchor="middle" transform="rotate(-10,512,473)">HC ❤</text>
+
+<!-- ═══ CHAIR (bold illustrated) ═══ -->
+<rect x="576" y="540" width="168" height="112" rx="16" fill="#2c3e50" stroke="#1a1a2e" stroke-width="5" filter="url(#sk)"/>
+<rect x="588" y="552" width="144" height="96" rx="12" fill="#34495e"/>
+<!-- Chair backrest -->
+<rect x="586" y="440" width="148" height="108" rx="14" fill="#2c3e50" stroke="#1a1a2e" stroke-width="5" filter="url(#sk)"/>
+<rect x="598" y="452" width="124" height="90" rx="10" fill="#34495e"/>
+<!-- HC logo on chair back -->
+<circle cx="660" cy="490" r="20" fill="#c0392b" stroke="#1a1a2e" stroke-width="3"/>
+<text x="660" y="496" font-family="'Permanent Marker',cursive" font-size="14" fill="#fff" text-anchor="middle">HC</text>
+<!-- Armrests -->
+<rect x="556" y="536" width="22" height="52" rx="6" fill="#2c3e50" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="742" y="536" width="22" height="52" rx="6" fill="#2c3e50" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Chair pole + base -->
+<rect x="646" y="650" width="28" height="52" rx="5" fill="#666" stroke="#1a1a2e" stroke-width="3"/>
+<ellipse cx="660" cy="678" rx="68" ry="12" fill="#444" stroke="#1a1a2e" stroke-width="3" filter="url(#sk)"/>
+<!-- Wheels (bold) -->
+<circle cx="600" cy="686" r="10" fill="#333" stroke="#1a1a2e" stroke-width="3"/>
+<circle cx="660" cy="688" r="10" fill="#333" stroke="#1a1a2e" stroke-width="3"/>
+<circle cx="720" cy="686" r="10" fill="#333" stroke="#1a1a2e" stroke-width="3"/>
+
+<!-- ═══ FILING CABINET (bold illustrated) ═══ -->
+<rect x="1014" y="248" width="178" height="228" rx="7" fill="#7a7a7a" stroke="#1a1a2e" stroke-width="6" filter="url(#sk)"/>
+<!-- Drawers with bold outlines -->
+<rect x="1022" y="256" width="162" height="64" rx="5" fill="#888" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="1022" y="328" width="162" height="64" rx="5" fill="#888" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="1022" y="400" width="162" height="64" rx="5" fill="#888" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Handles (bold pill shape) -->
+<rect x="1066" y="280" width="54" height="12" rx="6" fill="#555" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="1066" y="352" width="54" height="12" rx="6" fill="#555" stroke="#1a1a2e" stroke-width="2.5"/>
+<rect x="1066" y="424" width="54" height="12" rx="6" fill="#555" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Labels (illustrated, hand-drawn look) -->
+<rect x="1028" y="260" width="72" height="22" rx="3" fill="#fff" opacity=".8"/>
+<text x="1064" y="275" font-family="'Caveat',cursive" font-size="12" fill="#1a1a2e" text-anchor="middle">RSVPs 📋</text>
+<rect x="1028" y="332" width="72" height="22" rx="3" fill="#fff" opacity=".8"/>
+<text x="1064" y="347" font-family="'Caveat',cursive" font-size="12" fill="#1a1a2e" text-anchor="middle">Projects 🚀</text>
+<rect x="1028" y="404" width="72" height="22" rx="3" fill="#fff" opacity=".8"/>
+<text x="1064" y="419" font-family="'Caveat',cursive" font-size="12" fill="#1a1a2e" text-anchor="middle">Coins 🍖</text>
+<!-- Cabinet top surface -->
+<rect x="1006" y="236" width="194" height="16" rx="4" fill="#666" stroke="#1a1a2e" stroke-width="4"/>
+<!-- Trophy on cabinet (bold illustrated) -->
+<rect x="1022" y="190" width="22" height="48" rx="4" fill="#d4a017" stroke="#1a1a2e" stroke-width="4"/>
+<ellipse cx="1033" cy="188" rx="32" ry="22" fill="#d4a017" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<circle cx="1033" cy="172" rx="14" r="14" fill="#f0c030" stroke="#1a1a2e" stroke-width="3.5"/>
+<text x="1033" y="178" font-family="'Permanent Marker',cursive" font-size="14" fill="#8a6000" text-anchor="middle">★</text>
+<rect x="1014" y="234" width="38" height="8" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- HC Juice on cabinet (bold) -->
+<rect x="1064" y="196" width="30" height="42" rx="8" fill="#c0392b" stroke="#1a1a2e" stroke-width="4" filter="url(#sk)"/>
+<rect x="1064" y="196" width="30" height="14" rx="7" fill="#e74c3c"/>
+<rect x="1068" y="201" width="22" height="6" rx="3" fill="rgba(255,255,255,.4)"/>
+<text x="1079" y="218" font-family="'Permanent Marker',cursive" font-size="11" fill="#fff" text-anchor="middle">HC</text>
+<text x="1079" y="231" font-family="'Caveat',cursive" font-size="10" fill="#fde68a" text-anchor="middle">JUICE</text>
+<ellipse cx="1079" cy="196" rx="15" ry="5" fill="#8a1808" stroke="#1a1a2e" stroke-width="2.5"/>
+<!-- Plant on cabinet (bold illustrated) -->
+<rect x="1104" y="204" width="36" height="34" rx="6" fill="#27ae60" stroke="#1a1a2e" stroke-width="3.5"/>
+<rect x="1098" y="200" width="48" height="10" rx="4" fill="#1e8449" stroke="#1a1a2e" stroke-width="3"/>
+<path d="M1122 200 Q1110 178 1100 158 Q1116 172 1122 192" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<path d="M1122 200 Q1134 178 1144 158 Q1128 172 1122 192" fill="#2ecc71" stroke="#1a1a2e" stroke-width="2.5"/>
+<path d="M1122 200 Q1120 176 1122 152 Q1126 176 1122 200" fill="#27ae60" stroke="#1a1a2e" stroke-width="2"/>
+
+<!-- ═══ WALL DECORATIONS ═══ -->
+<!-- HC Poster (big, detailed, bold) -->
+<rect x="176" y="42" width="164" height="218" rx="6" fill="#8B6914" stroke="#1a1a2e" stroke-width="6" filter="url(#sk)"/>
+<rect x="186" y="52" width="144" height="198" rx="4" fill="#1a2a3e"/>
+<rect x="192" y="58" width="132" height="138" rx="3" fill="#c0392b"/>
+<!-- Orpheus (bold cartoon style) -->
+<ellipse cx="258" cy="112" rx="42" ry="54" fill="#e67e22" stroke="#1a1a2e" stroke-width="4"/>
+<ellipse cx="258" cy="86" rx="28" ry="34" fill="#f5c6a0" stroke="#1a1a2e" stroke-width="4"/>
+<ellipse cx="240" cy="78" rx="12" ry="16" fill="#e67e22" stroke="#1a1a2e" stroke-width="3.5"/>
+<ellipse cx="276" cy="78" rx="12" ry="16" fill="#e67e22" stroke="#1a1a2e" stroke-width="3.5"/>
+<!-- Eyes (bold) -->
+<circle cx="244" cy="78" r="7" fill="#1a1a2e"/>
+<circle cx="272" cy="78" r="7" fill="#1a1a2e"/>
+<circle cx="246" cy="76" r="3" fill="#fff"/>
+<circle cx="274" cy="76" r="3" fill="#fff"/>
+<!-- Smile -->
+<path d="M244 96 Q258 108 272 96" fill="none" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+<!-- Blush cheeks -->
+<ellipse cx="232" cy="92" rx="9" ry="6" fill="#e87060" opacity=".6"/>
+<ellipse cx="284" cy="92" rx="9" ry="6" fill="#e87060" opacity=".6"/>
+<!-- Poster text -->
+<text x="258" y="212" font-family="'Permanent Marker',cursive" font-size="17" fill="#fde68a" text-anchor="middle">HACK CLUB</text>
+<text x="258" y="232" font-family="'Caveat',cursive" font-size="13" fill="#e67e22" text-anchor="middle">Build. Ship. Repeat.</text>
+<!-- Poster pins (bold) -->
+<circle cx="188" cy="54" r="7" fill="#c0392b" stroke="#1a1a2e" stroke-width="2.5"/>
+<circle cx="328" cy="54" r="7" fill="#2980b9" stroke="#1a1a2e" stroke-width="2.5"/>
+<circle cx="188" cy="256" r="7" fill="#27ae60" stroke="#1a1a2e" stroke-width="2.5"/>
+<circle cx="328" cy="256" r="7" fill="#e67e22" stroke="#1a1a2e" stroke-width="2.5"/>
+
+<!-- SAFEHOUSE SIGN (bold) -->
+<rect x="176" y="278" width="164" height="68" rx="7" fill="#1a2a3e" stroke="#c0392b" stroke-width="5" filter="url(#sk)"/>
+<circle cx="186" cy="288" r="6" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="330" cy="288" r="6" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="186" cy="336" r="6" fill="#555" stroke="#333" stroke-width="2"/>
+<circle cx="330" cy="336" r="6" fill="#555" stroke="#333" stroke-width="2"/>
+<text x="258" y="306" font-family="'Permanent Marker',cursive" font-size="18" fill="#e67e22" text-anchor="middle">SAFEHOUSE</text>
+<text x="258" y="328" font-family="'Caveat',cursive" font-size="14" fill="#fde68a" text-anchor="middle">HQ 🔒 Members Only</text>
+
+<!-- WALL CLOCK (bold illustrated) -->
+<circle cx="960" cy="130" r="68" fill="#f5f0e6" stroke="#1a1a2e" stroke-width="6" filter="url(#sk)"/>
+<circle cx="960" cy="130" r="56" fill="#fff" stroke="rgba(31,45,61,.08)" stroke-width="1"/>
+<!-- Clock marks (bold) -->
+<line x1="960" y1="74" x2="960" y2="86" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="960" y1="174" x2="960" y2="186" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="892" y1="130" x2="904" y2="130" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="1016" y1="130" x2="1028" y2="130" stroke="#1a1a2e" stroke-width="4.5" stroke-linecap="round"/>
+<line x1="914" y1="84" x2="922" y2="92" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
+<line x1="998" y1="168" x2="1006" y2="176" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
+<line x1="914" y1="176" x2="922" y2="168" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
+<line x1="998" y1="92" x2="1006" y2="84" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
+<!-- Clock hands (animated) -->
+<line id="wall-clock-min" x1="960" y1="130" x2="960" y2="84" stroke="#1a1a2e" stroke-width="4" stroke-linecap="round"/>
+<line id="wall-clock-hr" x1="960" y1="130" x2="960" y2="104" stroke="#c0392b" stroke-width="5.5" stroke-linecap="round"/>
+<circle cx="960" cy="130" r="7" fill="#e67e22" stroke="#1a1a2e" stroke-width="3"/>
+<text x="960" y="158" font-family="'Caveat',cursive" font-size="12" fill="var(--muted)" text-anchor="middle">HACK O'CLOCK</text>
+
+<!-- FLOOR LAMP (bold illustrated) -->
+<rect x="456" y="282" width="12" height="222" rx="4" fill="#7a5c0a" stroke="#1a1a2e" stroke-width="4"/>
+<path d="M462 282 Q438 256 410 252 Q386 248 382 266" fill="none" stroke="#7a5c0a" stroke-width="7" stroke-linecap="round"/>
+<!-- Lamp shade (bold) -->
+<path d="M368 228 L400 228 L394 272 L374 272 Z" fill="#fde68a" stroke="#1a1a2e" stroke-width="4.5" filter="url(#sk)"/>
+<rect x="368" y="224" width="36" height="8" rx="3" fill="#d4a017" stroke="#1a1a2e" stroke-width="3"/>
+<!-- Glow (subtle) -->
+<ellipse cx="384" cy="276" rx="30" ry="10" fill="#fde68a" opacity=".35"/>
+<ellipse cx="462" cy="502" rx="32" ry="12" fill="#5a3e0a" stroke="#1a1a2e" stroke-width="3.5"/>
+
+<!-- STRING LIGHTS (bold, colorful) -->
+<path d="M0 12 Q160 22 320 12 Q480 2 640 12 Q800 22 960 12 Q1080 4 1200 12" fill="none" stroke="#8B6914" stroke-width="3.5" stroke-linecap="round"/>
+<circle cx="60" cy="20" r="9" fill="#fde68a" stroke="#c8a020" stroke-width="2.5"/>
+<circle cx="144" cy="13" r="9" fill="#fecaca" stroke="#c0392b" stroke-width="2.5"/>
+<circle cx="228" cy="22" r="9" fill="#fde68a" stroke="#c8a020" stroke-width="2.5"/>
+<circle cx="320" cy="13" r="9" fill="#bbf7d0" stroke="#27ae60" stroke-width="2.5"/>
+<circle cx="430" cy="8" r="9" fill="#fde68a" stroke="#c8a020" stroke-width="2.5"/>
+<circle cx="600" cy="14" r="9" fill="#fecaca" stroke="#c0392b" stroke-width="2.5"/>
+<circle cx="730" cy="22" r="9" fill="#bbf7d0" stroke="#27ae60" stroke-width="2.5"/>
+<circle cx="858" cy="13" r="9" fill="#fde68a" stroke="#c8a020" stroke-width="2.5"/>
+<circle cx="990" cy="22" r="9" fill="#fecaca" stroke="#c0392b" stroke-width="2.5"/>
+<circle cx="1110" cy="13" r="9" fill="#fde68a" stroke="#c8a020" stroke-width="2.5"/>
+<circle cx="1180" cy="20" r="9" fill="#bbf7d0" stroke="#27ae60" stroke-width="2.5"/>
+
+<!-- AREA RUG (bold, detailed) -->
+<ellipse cx="660" cy="638" rx="360" ry="52" fill="#c0392b" stroke="#1a1a2e" stroke-width="5" opacity=".85" filter="url(#sk)"/>
+<ellipse cx="660" cy="638" rx="328" ry="42" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+<ellipse cx="660" cy="638" rx="288" ry="32" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/>
+<text x="660" y="644" font-family="'Permanent Marker',cursive" font-size="22" fill="rgba(255,255,255,.38)" text-anchor="middle">SAFEHOUSE HQ</text>
+</svg>
+
+        <!-- Back button -->
+        <button class="view-btn" id="exit-btn" style="bottom:2%;left:3%;transform:none;font-size:1rem;padding:.45rem 1.2rem;"
+          onclick="exitBuilding()">
+          ← Go Outside
+        </button>
+
+        <!-- Clickable zones INSIDE -->
+        <!-- Cork board zone -->
+        <div class="zone" style="left:14.5%;top:5%;width:12%;" onclick="openModal('submit')">
+          <div class="zone__tooltip">📌 Submit Project</div>
+          <div style="width:100%;height:80px;"></div>
+        </div>
+        <!-- Clock zone -->
+        <div class="zone" style="right:20%;top:4%;width:7%;" onclick="openModal('timer')">
+          <div class="zone__tooltip">⏱ Track Time</div>
+          <div style="width:100%;height:60px;"></div>
+        </div>
+        <!-- Monitor zone -->
+        <div class="zone" style="left:46%;top:38%;width:18%;" onclick="openModal('vote')">
+          <div class="zone__tooltip">🗳 Vote on Projects</div>
+          <div style="width:100%;height:50px;"></div>
+        </div>
+        <!-- Bookshelf zone -->
+        <div class="zone" style="left:0%;top:2%;width:13%;" onclick="openModal('schedule')">
+          <div class="zone__tooltip">📅 Schedule</div>
+          <div style="width:100%;height:100px;"></div>
+        </div>
+        <!-- Filing cabinet zone -->
+        <div class="zone" style="right:0%;top:36%;width:13%;" onclick="openModal('shop')">
+          <div class="zone__tooltip">🛒 Shop</div>
+          <div style="width:100%;height:60px;"></div>
+        </div>
+        <!-- Juice can / coins zone -->
+        <div class="zone" style="left:66%;top:60%;width:5%;" onclick="openModal('coins')">
+          <div class="zone__tooltip">🍖 BBQ Coins</div>
+          <div style="width:100%;height:30px;"></div>
+        </div>
+        <!-- Poster zone (RSVP) -->
+        <div class="zone" style="left:14.5%;top:25%;width:12%;" onclick="openModal('rsvp')">
+          <div class="zone__tooltip">✉️ My RSVP</div>
+          <div style="width:100%;height:60px;"></div>
+        </div>
+        <!-- Window zone (Leaderboard) -->
+        <div class="zone" style="left:27%;top:2%;width:44%;" onclick="openModal('leaderboard')">
+          <div class="zone__tooltip">🏆 Leaderboard</div>
+          <div style="width:100%;height:30px;"></div>
+        </div>
+      </div>
+
+    </div>ass="zone" style="left:14.5%;top:8%;width:12%;" onclick="openModal('rsvp')">
+        <div class="zone__tooltip">✉️ My RSVP</div>
+        <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="100" height="40" fill="transparent"/>
+        </svg>
+      </div>
+
+      <!-- ░░ ZONE 8 — WINDOW → Leaderboard ░░ -->
+      <div class="zone" style="left:28%;top:3%;width:44%;" onclick="openModal('leaderboard')">
+        <div class="zone__tooltip">🏆 Leaderboard</div>
+        <svg viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="100" height="10" fill="transparent"/>
+        </svg>
+      </div>
+
+    </div></div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- SUBMIT PROJECT -->
+<div class="modal-bg" id="modal-submit">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('submit')">✕</button>
+    <div class="modal__stamp">📌 Cork Board</div>
+    <h2>Pin Your Project</h2>
+    <p>Ship something real. Fill this out and it goes straight on the wall for everyone to see.</p>
+    <div class="modal-field">
+      <label class="modal-label">Project Name *</label>
+      <input class="modal-input" id="proj-name" placeholder="What did you build?"/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">GitHub / Live Link *</label>
+      <input class="modal-input" id="proj-url" placeholder="https://github.com/..."/>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">What does it do?</label>
+      <textarea class="modal-textarea" id="proj-desc" placeholder="Give us the quick pitch..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Hours Spent</label>
+      <input class="modal-input" id="proj-hours" type="number" placeholder="e.g. 12" min="1"/>
+    </div>
+    <div id="submit-success" style="display:none;margin-bottom:.8rem;background:var(--sticky-g);border:2px solid var(--green);border-radius:6px;padding:.7rem 1rem;font-size:.85rem;font-weight:700;color:#145a32;"></div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end;">
+      <button class="modal-btn modal-btn--ghost" onclick="closeModal('submit')">Cancel</button>
+      <button class="modal-btn modal-btn--green" onclick="submitProject()">📌 Pin It!</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIME TRACKER -->
+<div class="modal-bg" id="modal-timer">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('timer');stopTimer();">✕</button>
+    <div class="modal__stamp">⏱ Clock</div>
+    <h2>Time Tracker</h2>
+    <p>Every hour you hack earns you 100 🍖. Start the timer when you start coding.</p>
+    <div style="text-align:center;padding:.8rem 0;">
+      <div class="tracker-display" id="tracker-display">00:00:00</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem;" id="tracker-status">Ready to start</div>
+      <button class="tracker-btn tracker-btn--start" id="tracker-btn" onclick="toggleTimer()">▶</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin:.8rem 0;">
+      <div style="background:var(--sticky-y);border-radius:6px;padding:.6rem;text-align:center;border:1.5px solid var(--gold);">
+        <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Session</div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--amber);" id="tracker-session">0m</div>
+      </div>
+      <div style="background:var(--sticky-g);border-radius:6px;padding:.6rem;text-align:center;border:1.5px solid var(--green);">
+        <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Total</div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--green);" id="tracker-total">0h</div>
+      </div>
+      <div style="background:var(--sticky-p);border-radius:6px;padding:.6rem;text-align:center;border:1.5px solid #f87171;">
+        <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Earned</div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;color:var(--red);" id="tracker-earned">0🍖</div>
+      </div>
+    </div>
+    <div id="tracker-log" style="max-height:130px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- VOTE -->
+<div class="modal-bg" id="modal-vote">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('vote')">✕</button>
+    <div class="modal__stamp">🗳 Laptop</div>
+    <h2>Vote for Projects</h2>
+    <p>Pick your favorite. One vote, make it count. Voting earns you <strong>+50 🍖</strong>.</p>
+    <div class="vote-grid" id="vote-grid"></div>
+    <div id="vote-msg" style="display:none;margin-top:.8rem;font-size:.82rem;font-weight:700;color:var(--green);">✅ Vote saved!</div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="modal-bg" id="modal-schedule">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('schedule')">✕</button>
+    <div class="modal__stamp">📅 Bookshelf</div>
+    <h2>Event Schedule</h2>
+    <p>Event countdown:</p>
+    <div class="timer-wrap">
+      <div class="timer-block"><div class="timer-block__num" id="cd-d">00</div><div class="timer-block__label">Days</div></div>
+      <div class="timer-block"><div class="timer-block__num" id="cd-h">00</div><div class="timer-block__label">Hrs</div></div>
+      <div class="timer-block"><div class="timer-block__num" id="cd-m">00</div><div class="timer-block__label">Min</div></div>
+      <div class="timer-block"><div class="timer-block__num" id="cd-s">00</div><div class="timer-block__label">Sec</div></div>
+    </div>
+    <div id="schedule-list" style="margin-top:.5rem;"></div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="modal-bg" id="modal-shop">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('shop')">✕</button>
+    <div class="modal__stamp">🛒 Vending Machine</div>
+    <h2>Spend Your Coins</h2>
+    <p>Your balance: <strong id="shop-balance" style="color:var(--amber);font-size:1rem;">🍖 0</strong></p>
+    <div class="shop-grid" id="shop-grid"></div>
+    <p style="font-size:.7rem;color:var(--muted);margin-top:.8rem;">* Redemptions reviewed by Aref before shipping.</p>
+  </div>
+</div>
+
+<!-- COINS -->
+<div class="modal-bg" id="modal-coins">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('coins')">✕</button>
+    <div class="modal__stamp">🍖 BBQ Grill</div>
+    <h2>BBQ Coins</h2>
+    <div class="coin-big" id="coin-count">0</div>
+    <div class="coin-sub">coins earned so far</div>
+    <div style="background:var(--paper2);border-radius:8px;padding:1rem;margin-bottom:.8rem;">
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">How to earn</div>
+      <div class="earn-row"><span>📌 Ship a project</span><span style="font-weight:700;color:var(--amber);">+500 🍖</span></div>
+      <div class="earn-row"><span>⏱ Log 1 hour coding</span><span style="font-weight:700;color:var(--amber);">+100 🍖</span></div>
+      <div class="earn-row"><span>🗳 Vote on a project</span><span style="font-weight:700;color:var(--amber);">+50 🍖</span></div>
+      <div class="earn-row" style="border:none;"><span>📣 Share the event</span><span style="font-weight:700;color:var(--amber);">+25 🍖</span></div>
+    </div>
+    <div style="background:var(--paper2);border-radius:8px;padding:1rem;">
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">History</div>
+      <div id="coin-history"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RSVP -->
+<div class="modal-bg" id="modal-rsvp">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('rsvp')">✕</button>
+    <div class="modal__stamp" style="color:var(--green);border-color:var(--green);">✅ Confirmed</div>
+    <h2>Your RSVP</h2>
+    <div style="background:var(--sticky-g);border:2px solid var(--green);border-radius:8px;padding:1.2rem;margin-bottom:.8rem;">
+      <div style="font-size:.7rem;font-weight:700;color:#145a32;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">You're on the list</div>
+      <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--ink);margin-bottom:.2rem;" id="rsvp-name-d">—</div>
+      <div style="font-size:.82rem;color:var(--muted);" id="rsvp-email-d">—</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem;">
+      <div style="background:var(--paper2);border-radius:6px;padding:.7rem;">
+        <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Excitement</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--amber);margin-top:.2rem;" id="rsvp-exc-d">—</div>
+      </div>
+      <div style="background:var(--paper2);border-radius:6px;padding:.7rem;">
+        <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;">Heard From</div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--ink);margin-top:.2rem;" id="rsvp-hear-d">—</div>
+      </div>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);text-align:center;">Doors open soon. Keep building! 🚪</p>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="modal-bg" id="modal-leaderboard">
+  <div class="modal">
+    <div class="modal__tape modal__tape--tl"></div><div class="modal__tape modal__tape--tr"></div>
+    <button class="modal__close" onclick="closeModal('leaderboard')">✕</button>
+    <div class="modal__stamp">🏆 Window</div>
+    <h2>Leaderboard</h2>
+    <p>Top shippers ranked by BBQ Coins. Climb the wall.</p>
+    <div id="lb-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_API_URL='https://sheets.googleapis.com/v4/spreadsheets/1vSrSqvihy7HmsAIYOoHMyYHAjyirgx4gyfb7IXOmmPpr-PVEutT09J-nA4uv7elpUJGmgwxbAF9rD8h/values/Sheet1?key=AIzaSyD60d8UFg0eVbqjDj2GypAjHp5L5j6Kr5g';
+const EVENT_DATE=new Date('2026-06-01T10:00:00');
+const SHOP_ITEMS=[
+  {icon:'🏷️',name:'Sticker Pack',cost:500},
+  {icon:'⌨️',name:'Mech Keyboard',cost:1500},
+  {icon:'🔌',name:'Hardware Bundle',cost:2000},
+  {icon:'🍓',name:'Raspberry Pi 5',cost:2500},
+  {icon:'🎮',name:'Sprig Console',cost:3000},
+  {icon:'✏️',name:'Blot Machine',cost:4000},
+  {icon:'📦',name:'Mystery Box',cost:5000},
+  {icon:'📱',name:'iPad',cost:6000},
+];
+
+function gd(k,d){try{return JSON.parse(localStorage.getItem('sh_'+k))??d;}catch{return d;}}
+function sd(k,v){localStorage.setItem('sh_'+k,JSON.stringify(v));}
+
+let me=null;
+let allRsvps=gd('rsvps',[]);
+let coinMap=gd('coinmap',{});
+let projects=gd('projects',[]);
+let schedule=gd('schedule',[
+  {time:'09:00 AM',title:'Doors Open',desc:'Welcome to the Safehouse!'},
+  {time:'10:00 AM',title:'Hacking Begins',desc:'Build in secret. Ship in style.'},
+  {time:'01:00 PM',title:'BBQ Lunch',desc:'Earn coins, eat good.'},
+  {time:'05:00 PM',title:'Project Submissions',desc:'Pin your project to the wall.'},
+  {time:'07:00 PM',title:'Awards & Ceremony',desc:'Top shippers claim their loot.'},
+]);
+
+/* ── CSV ── */
+function parseCSV(t){
+  const rows=[];
+  for(const line of t.split(/\r\n|\r|\n/)){
+    if(!line.trim())continue;
+    const cols=[];let cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+      else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+      else cur+=ch;
+    }
+    cols.push(cur.trim());rows.push(cols);
+  }
+  return rows;
+}
+
+/* ── LOGIN ── */
+document.getElementById('login-btn').addEventListener('click',tryLogin);
+document.getElementById('login-email').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+
+async function tryLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const err=document.getElementById('login-err');
+  if(!email||!email.includes('@')){err.textContent='Enter a valid email.';return;}
+  err.textContent='Loading your room...';
+
+  /* Try direct CSV first, then proxy fallback */
+  try{
+    const res=await fetch(SHEET_API_URL,{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    const rows=json.values||[];
+    const fresh=[];
+    for(let i=1;i<rows.length;i++){
+      const r=rows[i];
+      const em=(r[2]||'').trim().toLowerCase();
+      if(!em)continue;
+      fresh.push({id:i,date:(r[0]||'').trim(),name:(r[1]||'').trim()||'Hacker',
+        email:em,excited:r[3]||'',hear:r[4]||'',coins:coinMap[em]??0});
+    }
+    if(fresh.length>0){allRsvps=fresh;sd('rsvps',allRsvps);}
+  }catch(e){
+    if(allRsvps.length===0){
+      err.textContent='Could not load RSVPs. Check your connection.';
+      return;
+    }
+  }
+
+  /* Flexible match: trim + lowercase + also try contains */
+  let user=allRsvps.find(r=>r.email===email);
+  if(!user) user=allRsvps.find(r=>r.email.includes(email)||email.includes(r.email));
+
+  if(!user){
+    /* Show what emails were found to help debug */
+    const sample=allRsvps.slice(0,3).map(r=>r.email).join(', ');
+    err.innerHTML='<b>Email not found.</b> Found '+allRsvps.length+' RSVPs — use the exact email you signed up with.';
+    return;
+  }
+  me=user;
+  document.getElementById('login-screen').style.display='none';
+  const app=document.getElementById('app');app.style.display='flex';
+  initApp();
+}
+document.getElementById('logout-btn').addEventListener('click',()=>{
+  me=null;stopTimer();
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-err').textContent='';
+});
+
+/* ── INIT ── */
+function enterBuilding(){
+  document.getElementById('view-outside').style.display='none';
+  document.getElementById('view-inside').style.display='block';
+  document.getElementById('room').style.background='#f0e8d8';
+}
+function exitBuilding(){
+  document.getElementById('view-inside').style.display='none';
+  document.getElementById('view-outside').style.display='block';
+  document.getElementById('room').style.background='#a8d8f0';
+}
+function initApp(){
+  document.getElementById('topbar-name').textContent=me.name;
+  refreshCoinsBar();startClock();startCountdown();
+}
+
+/* ── COINS ── */
+function myCoins(){return coinMap[me.email]||0;}
+function addCoins(n,reason){
+  coinMap[me.email]=(myCoins()+n);
+  sd('coinmap',coinMap);refreshCoinsBar();
+  toast('+'+n+' 🍖 '+reason);
+  const h=gd('ch_'+me.email,[]);
+  h.unshift({n,reason,date:new Date().toLocaleString()});
+  sd('ch_'+me.email,h.slice(0,20));
+}
+function refreshCoinsBar(){
+  document.getElementById('topbar-coins').textContent='🍖 '+myCoins().toLocaleString();
+}
+
+/* ── CLOCK ── */
+function startClock(){
+  function tick(){
+    const now=new Date();
+    const mDeg=(now.getMinutes()+(now.getSeconds()/60))*6;
+    const hDeg=((now.getHours()%12)+(now.getMinutes()/60))*30;
+    setHand('clock-min',mDeg,50,70,50,42);
+    setHand('clock-hr',hDeg,50,70,50,50);
+    // Pixel art clock - animate via transform
+    setHand('wall-clock-min',mDeg,960,130,960,84);
+    setHand('wall-clock-hr',hDeg,960,130,960,104);
+  }
+  function setHand(id,deg,cx,cy,x2,y2){
+    const el=document.getElementById(id);if(!el)return;
+    const r=Math.hypot(x2-cx,y2-cy);
+    const rad=(deg-90)*Math.PI/180;
+    el.setAttribute('x2',cx+r*Math.cos(rad));
+    el.setAttribute('y2',cy+r*Math.sin(rad));
+  }
+  tick();setInterval(tick,1000);
+}
+
+/* ── COUNTDOWN ── */
+function startCountdown(){
+  function tick(){
+    const diff=EVENT_DATE-new Date();
+    if(diff<=0){['cd-d','cd-h','cd-m','cd-s'].forEach(id=>{document.getElementById(id).textContent='00';});return;}
+    document.getElementById('cd-d').textContent=String(Math.floor(diff/86400000)).padStart(2,'0');
+    document.getElementById('cd-h').textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+    document.getElementById('cd-m').textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    document.getElementById('cd-s').textContent=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+}
+
+/* ── MODALS ── */
+function openModal(id){
+  document.getElementById('modal-'+id).classList.add('open');
+  if(id==='coins')renderCoins();
+  if(id==='shop')renderShop();
+  if(id==='vote')renderVote();
+  if(id==='schedule')renderSchedule();
+  if(id==='leaderboard')renderLeaderboard();
+  if(id==='rsvp')renderRsvp();
+  if(id==='timer')renderTimerLog();
+}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(bg=>bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('open');}));
+
+/* ── SUBMIT PROJECT ── */
+function submitProject(){
+  const name=document.getElementById('proj-name').value.trim();
+  const url=document.getElementById('proj-url').value.trim();
+  const desc=document.getElementById('proj-desc').value.trim();
+  const hrs=parseInt(document.getElementById('proj-hours').value)||0;
+  if(!name||!url){toast('⚠️ Name and link are required');return;}
+  projects.push({id:Date.now(),name,url,desc,hours:hrs,author:me.name,email:me.email,status:'pending',date:new Date().toLocaleDateString()});
+  sd('projects',projects);
+  const total=500+(hrs*100);
+  addCoins(total,'for submitting "'+name+'"');
+  const s=document.getElementById('submit-success');
+  s.style.display='block';s.textContent='✅ "'+name+'" pinned! +'+total+' 🍖 earned.';
+  document.getElementById('proj-name').value='';
+  document.getElementById('proj-url').value='';
+  document.getElementById('proj-desc').value='';
+  document.getElementById('proj-hours').value='';
+}
+
+/* ── TIMER ── */
+let timerOn=false,timerStart=null,timerIv=null;
+function toggleTimer(){
+  if(!timerOn){
+    timerOn=true;timerStart=Date.now();
+    document.getElementById('tracker-btn').className='tracker-btn tracker-btn--stop';
+    document.getElementById('tracker-btn').textContent='⏹';
+    document.getElementById('tracker-status').textContent='🔴 Tracking...';
+    timerIv=setInterval(tickTimer,1000);
+  } else {
+    const secs=Math.floor((Date.now()-timerStart)/1000);
+    const mins=Math.floor(secs/60);
+    stopTimer();
+    if(mins>0){
+      const coins=mins*Math.floor(100/60)||10;
+      addCoins(coins,'for '+mins+'min hacking session');
+      const tm=gd('tm_'+me.email,0)+mins;sd('tm_'+me.email,tm);
+      const log=gd('tl_'+me.email,[]);
+      log.unshift({mins,date:new Date().toLocaleString()});
+      sd('tl_'+me.email,log.slice(0,10));
+    }
+    renderTimerLog();
+  }
+}
+function stopTimer(){
+  if(timerIv)clearInterval(timerIv);timerIv=null;timerOn=false;timerStart=null;
+  document.getElementById('tracker-btn').className='tracker-btn tracker-btn--start';
+  document.getElementById('tracker-btn').textContent='▶';
+  document.getElementById('tracker-status').textContent='Ready to start';
+  document.getElementById('tracker-display').textContent='00:00:00';
+}
+function tickTimer(){
+  const e=Math.floor((Date.now()-timerStart)/1000);
+  const h=Math.floor(e/3600),m=Math.floor((e%3600)/60),s=e%60;
+  document.getElementById('tracker-display').textContent=pad(h)+':'+pad(m)+':'+pad(s);
+  document.getElementById('tracker-session').textContent=(h?h+'h ':'')+m+'m';
+  const tm=gd('tm_'+me.email,0);
+  document.getElementById('tracker-total').textContent=Math.floor(tm/60)+'h '+(tm%60)+'m';
+  document.getElementById('tracker-earned').textContent=(tm*Math.floor(100/60)||0)+'🍖';
+}
+function pad(n){return String(n).padStart(2,'0');}
+function renderTimerLog(){
+  const log=gd('tl_'+me.email,[]);
+  const el=document.getElementById('tracker-log');
+  if(!log.length){el.innerHTML='<div style="font-size:.75rem;color:var(--muted);text-align:center;padding:.5rem;">No sessions logged yet.</div>';return;}
+  el.innerHTML=log.map(l=>'<div class="tracker-log-item"><span>'+l.date+'</span><span style="font-weight:700;color:var(--amber);">'+l.mins+' min</span></div>').join('');
+}
+
+/* ── VOTE ── */
+function renderVote(){
+  const grid=document.getElementById('vote-grid');
+  const myVote=gd('vote_'+me.email,'');
+  const list=projects.slice(0,6);
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:1.5rem;font-size:.85rem;">No projects submitted yet. Be the first!</div>';return;}
+  grid.innerHTML=list.map(p=>'<div class="vote-card'+(myVote===String(p.id)?' voted':'')+'" onclick="castVote('+p.id+')"><div class="vote-card__name">'+esc(p.name)+'</div><div class="vote-card__author">by '+esc(p.author)+'</div><div class="vote-card__votes">'+countVotes(p.id)+' votes</div></div>').join('');
+}
+function countVotes(id){return Object.values(gd('votes',{})).filter(v=>v===String(id)).length;}
+function castVote(id){
+  const prev=gd('vote_'+me.email,'');
+  if(prev===String(id)){toast('Already voted for this!');return;}
+  const v=gd('votes',{});v[me.email]=String(id);sd('votes',v);sd('vote_'+me.email,String(id));
+  if(!prev)addCoins(50,'for voting on a project');
+  renderVote();
+  document.getElementById('vote-msg').style.display='block';
+}
+
+/* ── SCHEDULE ── */
+function renderSchedule(){
+  document.getElementById('schedule-list').innerHTML=schedule.map(s=>'<div class="sch-item"><div class="sch-time">'+esc(s.time)+'</div><div><div class="sch-title">'+esc(s.title)+'</div><div class="sch-desc">'+esc(s.desc)+'</div></div></div>').join('');
+}
+
+/* ── SHOP ── */
+function renderShop(){
+  document.getElementById('shop-balance').textContent='🍖 '+myCoins().toLocaleString();
+  document.getElementById('shop-grid').innerHTML=SHOP_ITEMS.map(item=>'<div class="shop-item" onclick="redeemItem(\''+esc(item.name)+'\','+item.cost+')"><div class="shop-item__icon">'+item.icon+'</div><div class="shop-item__name">'+esc(item.name)+'</div><div class="shop-item__cost">'+item.cost.toLocaleString()+' 🍖</div></div>').join('');
+}
+function redeemItem(name,cost){
+  if(myCoins()<cost){toast('Need '+cost+' 🍖 — you have '+myCoins());return;}
+  if(!confirm('Redeem "'+name+'" for '+cost+' 🍖?'))return;
+  coinMap[me.email]=myCoins()-cost;sd('coinmap',coinMap);
+  refreshCoinsBar();renderShop();
+  toast('🎉 Redeemed! Aref will review your order.');
+}
+
+/* ── COINS DISPLAY ── */
+function renderCoins(){
+  const c=myCoins(),el=document.getElementById('coin-count'),t0=performance.now();
+  (function tick(now){const p=Math.min((now-t0)/1200,1);el.textContent=Math.floor((1-Math.pow(1-p,3))*c).toLocaleString();if(p<1)requestAnimationFrame(tick);else el.textContent=c.toLocaleString();})(t0);
+  const hist=gd('ch_'+me.email,[]),hel=document.getElementById('coin-history');
+  if(!hist.length){hel.innerHTML='<div style="font-size:.75rem;color:var(--muted);">No activity yet.</div>';return;}
+  hel.innerHTML=hist.map(h=>'<div class="earn-row"><span>'+esc(h.reason)+'</span><span style="font-weight:700;color:var(--amber);">+'+h.n+' 🍖</span></div>').join('');
+}
+
+/* ── RSVP ── */
+function renderRsvp(){
+  const exc={'1':'😐 Meh','2':'🤔 Maybe','3':'😊 Interested','4':'🔥 Excited','5':'🤯 NEED IT'};
+  document.getElementById('rsvp-name-d').textContent=me.name;
+  document.getElementById('rsvp-email-d').textContent=me.email;
+  document.getElementById('rsvp-exc-d').textContent=exc[me.excited]||me.excited||'—';
+  document.getElementById('rsvp-hear-d').textContent=me.hear||'—';
+}
+
+/* ── LEADERBOARD ── */
+function renderLeaderboard(){
+  const sorted=[...allRsvps].map(r=>({...r,coins:coinMap[r.email]||0})).sort((a,b)=>b.coins-a.coins);
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('lb-list').innerHTML=sorted.slice(0,10).map((r,i)=>'<div class="lb-row'+(r.email===me.email?' lb-row--me':'')+'"><div class="lb-rank">'+(medals[i]||('#'+(i+1)))+'</div><div class="lb-name">'+esc(r.name)+(r.email===me.email?' <span style="font-size:.62rem;background:var(--amber);color:#fff;padding:.1rem .35rem;border-radius:10px;margin-left:.3rem;">you</span>':'')+'</div><div class="lb-coins">🍖 '+(r.coins||0).toLocaleString()+'</div></div>').join('');
+}
+
+/* ── TOAST ── */
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ── ESC ── */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>

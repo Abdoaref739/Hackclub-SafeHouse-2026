@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Safehouse — Hack Club</title>
+  <style>
+    @font-face {
+      font-family:'Phantom Sans';
+      src:url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Regular.woff2') format('woff2');
+      font-weight:400;font-style:normal;font-display:swap;
+    }
+    @font-face {
+      font-family:'Phantom Sans';
+      src:url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Italic.woff2') format('woff2');
+      font-weight:400;font-style:italic;font-display:swap;
+    }
+    @font-face {
+      font-family:'Phantom Sans';
+      src:url('https://assets.hackclub.com/fonts/Phantom_Sans_0.7/Bold.woff2') format('woff2');
+      font-weight:700;font-style:normal;font-display:swap;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Caveat:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+/* ── TEAM SECTION ── */
+.team-sec{padding:5rem 2rem;background:radial-gradient(ellipse at 20% 50%,rgba(230,126,34,.07) 0%,transparent 55%),var(--paper2);border-top:2px dashed var(--border);}
+.team-sec__inner{max-width:var(--max);margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:2.5rem;}
+.team-sec__head{text-align:center;}
+.team-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;}
+.team-card{position:relative;background:#fff;border:2.5px solid var(--ink);border-radius:8px;padding:1.8rem 1.5rem 1.5rem;width:280px;box-shadow:6px 6px 0 var(--ink);text-align:center;transform:rotate(-1deg);transition:transform .2s,box-shadow .2s;}
+.team-card:hover{transform:rotate(0deg) translateY(-4px);box-shadow:8px 8px 0 var(--red);}
+.team-card__tack{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e05f00 0%,#8b2e00 100%);box-shadow:0 2px 6px rgba(0,0,0,.25);}
+.team-card__photo-wrap{position:relative;display:inline-block;margin-bottom:1rem;}
+.team-card__photo{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--amber);display:block;}
+.team-card__badge{position:absolute;bottom:-6px;right:-10px;background:var(--red);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.05em;padding:.2rem .55rem;border-radius:20px;border:2px solid #fff;white-space:nowrap;}
+.team-card__name{font-family:var(--font-display);font-size:1.5rem;color:var(--ink);margin-bottom:.2rem;}
+.team-card__role{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem;}
+.team-card__bio{font-size:.85rem;color:var(--ink-light);line-height:1.6;font-style:italic;}
+.team-dino-row{display:flex;align-items:flex-end;gap:1rem;max-width:var(--max);margin:0 auto;padding:0 1rem;}
+.team-dino-row img{width:80px;border-radius:0;}
+.team-bubble{background:#fff;border:2px solid var(--ink);border-radius:14px 14px 14px 4px;padding:.8rem 1.2rem;font-family:var(--font-hand);font-size:1.1rem;font-weight:700;color:var(--ink);box-shadow:3px 3px 0 rgba(31,45,61,.1);}
+</style>
+  <link rel="stylesheet" href="style.css"/>
+
+<style>
+.item-card__cost{
+  display:flex;align-items:center;justify-content:flex-end;gap:.6rem;
+  margin-top:.75rem;padding-top:.6rem;
+  border-top:1.5px dashed rgba(31,45,61,.12);
+}
+.item-card__cost-hrs{
+  font-size:.72rem;font-weight:700;color:var(--muted);
+  font-family:var(--font-body);
+}
+.item-card__cost-coins{
+  font-size:.8rem;font-weight:700;color:var(--amber);
+  font-family:var(--font-body);
+  background:var(--sticky-y);
+  padding:.15rem .55rem;border-radius:20px;
+  border:1.5px solid rgba(212,160,23,.3);
+}
+.item-card__best{
+  font-size:.68rem;font-weight:700;letter-spacing:.05em;
+  color:#fff;background:var(--green);
+  padding:.18rem .6rem;border-radius:4px;
+  display:inline-block;margin-bottom:.4rem;
+  box-shadow:2px 2px 0 rgba(0,0,0,.1);
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav class="nav" id="topnav">
+  <a href="#" class="nav__brand">
+    <img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="Hack Club" class="nav__flag"/>
+    <span class="nav__name">Safehouse</span>
+  </a>
+  <div class="nav__links">
+    <a href="#how">How It Works</a>
+    <a href="#coins">BBQ Coins</a>
+    <a href="#shop">Shop</a>
+    <a href="#team">Team</a>
+    <a href="#signup" class="nav__cta">Join the Safehouse →</a>
+  </div>
+  <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how" class="mm-link">How It Works</a>
+  <a href="#coins" class="mm-link">BBQ Coins</a>
+  <a href="#shop" class="mm-link">Shop</a>
+  <a href="#team" class="mm-link">Team</a>
+  <a href="#signup" class="mm-link mm-link--cta">Join the Safehouse →</a>
+</div>
+
+
+<!-- ══════════════════ HERO ══════════════════
+  Concept: A corkboard/mission-wall inside the
+  secret hideout. Warm parchment. Hand-stamped
+  SAFEHOUSE title. Orpheus peeking in.
+══════════════════════════════════════════════ -->
+<header class="hero" id="hero">
+
+  <!-- Parchment texture overlay -->
+  <div class="hero__texture"></div>
+
+  <!-- Corkboard pins decoration -->
+  <div class="hero__pins" aria-hidden="true">
+    <span class="pin pin1"></span>
+    <span class="pin pin2"></span>
+    <span class="pin pin3"></span>
+    <span class="pin pin4"></span>
+  </div>
+
+  <!-- Orpheus peeking over top edge -->
+  <img src="https://rawr.hackclub.com/dino_in_a_box_v2.png"
+    alt="Orpheus peeking" class="hero__peek" aria-hidden="true"/>
+
+  <!-- Main hero content -->
+  <div class="hero__content">
+
+    <!-- Hack Club badge stamp -->
+    <div class="hero__stamp">
+      <img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="Hack Club" class="hero__hc-flag"/>
+      <span>A Hack Club Event</span>
+    </div>
+
+    <!-- Title — BIG, hand-stamped feel -->
+    <div class="hero__title-wrap">
+      <span class="hero__eyebrow">Welcome to the</span>
+      <h1 class="hero__title">SAFE<br/>HOUSE</h1>
+      <span class="hero__subtitle">Build in secret. Ship in style. Collect BBQ.</span>
+    </div>
+
+    <p class="hero__tagline">
+      A secret underground base where teen hackers build wild projects,<br/>
+      pin them to the wall, and get rewarded with <em>actual cool stuff.</em>
+    </p>
+
+    <div class="hero__actions">
+      <a href="#signup" class="btn btn--ink">Claim Your Room</a>
+      <a href="#how" class="btn btn--ghost-ink">How it works ↓</a>
+    </div>
+
+    <!-- Stats on sticky notes -->
+    <div class="hero__stickies">
+      <div class="sticky sticky--yellow">
+        <b class="count" data-target="0">0</b>
+        <span>Hackers</span>
+      </div>
+      <div class="sticky sticky--green">
+        <b class="count" data-target="0">0</b>
+        <span>Projects Shipped</span>
+      </div>
+      <div class="sticky sticky--pink">
+        <b class="count" data-target="0">0</b>
+        <span>BBQ Coins Earned</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Orpheus at bottom right, excited -->
+  <img src="https://rawr.hackclub.com/dino_sees_something_she_wants.png"
+    alt="Orpheus excited" class="hero__orpheus-corner"/>
+
+</header>
+
+
+<!-- ══════════════════ THE MISSION BOARD — How It Works ══════════════════
+  Styled as a detective corkboard mission wall. Each step is a
+  "mission briefing card" pinned with a tack.
+══════════════════════════════════════════════════════════════════════════ -->
+<section class="how" id="how">
+  <div class="how__head">
+    <div class="section-stamp">The Mission</div>
+    <h2 class="section-h">How It Works</h2>
+    <p class="section-sub">Four steps from empty room to legendary hacker.</p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="mission-row mission-row--a reveal">
+    <div class="mission-card">
+      <div class="mission-card__tack"></div>
+      <span class="mission-card__num">01</span>
+      <h3>Claim Your Room</h3>
+      <p>Sign up with Hack Club. You instantly get a room inside the Safehouse —
+        four walls, empty. That's your base. Decorate it, fill it, make it yours.</p>
+    </div>
+    <div class="mission-img">
+      <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=420&fit=crop" alt="Set up base"/>
+      <img src="https://rawr.hackclub.com/smart_dinosaur_docs.png" alt="Orpheus reading" class="mis-dino mis-dino--bl"/>
+    </div>
+  </div>
+
+  <!-- Arrow right -->
+  <div class="drawn-arrow darr--right">
+    <svg viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 60 C 80 20, 170 75, 270 40 C 286 34, 300 26, 308 18"
+        stroke="#c0392b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M299 9 L310 19 L296 26" stroke="#c0392b" stroke-width="4.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="130" y="14" font-family="Caveat, cursive" font-size="14" fill="#c0392b" transform="rotate(-5,130,14)">then...</text>
+    </svg>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="mission-row mission-row--b reveal">
+    <div class="mission-img">
+      <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600&h=420&fit=crop" alt="Build a project"/>
+      <img src="https://rawr.hackclub.com/code_dinosaur.png" alt="Orpheus coding" class="mis-dino mis-dino--br"/>
+    </div>
+    <div class="mission-card">
+      <div class="mission-card__tack mission-card__tack--red"></div>
+      <span class="mission-card__num">02</span>
+      <h3>Build Something Real</h3>
+      <p>A game, a website, a tool, an art project — anything you're genuinely
+        excited about. Log your hours as you go. The more you build, the more
+        you earn. No faking it.</p>
+    </div>
+  </div>
+
+  <!-- Arrow left -->
+  <div class="drawn-arrow darr--left">
+    <svg viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M296 60 C 240 20, 150 75, 50 40 C 34 34, 20 26, 12 18"
+        stroke="#e67e22" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 9 L10 19 L24 26" stroke="#e67e22" stroke-width="4.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="160" y="14" font-family="Caveat, cursive" font-size="14" fill="#e67e22" transform="rotate(4,160,14)">next up...</text>
+    </svg>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="mission-row mission-row--a reveal">
+    <div class="mission-card">
+      <div class="mission-card__tack mission-card__tack--blue"></div>
+      <span class="mission-card__num">03</span>
+      <h3>Ship It to the Wall</h3>
+      <p>Submit your project. It gets reviewed, and if it ships — your project card
+        gets pinned to your personal Wall of Fame inside the Safehouse HQ.
+        Your room literally grows around your work.</p>
+    </div>
+    <div class="mission-img">
+      <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&h=420&fit=crop" alt="Pin to wall"/>
+      <img src="https://rawr.hackclub.com/dino_winning.png" alt="Orpheus winning" class="mis-dino mis-dino--bl"/>
+    </div>
+  </div>
+
+  <!-- Arrow right -->
+  <div class="drawn-arrow darr--right">
+    <svg viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 55 C 90 15, 200 70, 290 38 C 303 33, 311 25, 314 16"
+        stroke="#27ae60" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M306 7 L315 17 L301 24" stroke="#27ae60" stroke-width="4.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="148" y="14" font-family="Caveat, cursive" font-size="14" fill="#27ae60" transform="rotate(-3,148,14)">finally!</text>
+    </svg>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="mission-row mission-row--b reveal">
+    <div class="mission-img">
+      <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=420&fit=crop" alt="Collect BBQ coins"/>
+      <img src="https://rawr.hackclub.com/party_orpheus.png" alt="Party Orpheus" class="mis-dino mis-dino--br"/>
+    </div>
+    <div class="mission-card">
+      <div class="mission-card__tack mission-card__tack--gold"></div>
+      <span class="mission-card__num">04</span>
+      <h3>Collect BBQ &amp; Upgrade</h3>
+      <p>Every shipped project earns BBQ Coins. Spend them in the BBQ Shop
+        on real swag, HQ decorations, and exclusive Safehouse items
+        you literally cannot get anywhere else.</p>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════ BBQ COIN STANDARD ══════════════════ -->
+<section class="coins-sec" id="coins">
+
+  <img src="https://rawr.hackclub.com/money_dinosaur_2.png" alt=""
+    class="coins-sec__bg-dino" aria-hidden="true"/>
+
+  <div class="coins-sec__inner">
+    <div class="section-stamp section-stamp--red">The Currency</div>
+    <h2 class="section-h">What Is a BBQ Coin?</h2>
+    <p class="coins-sec__intro">
+      BBQ Coins are the Safehouse's official currency. No grinding, no loopholes —
+      you earn them by <em>actually building things.</em>
+    </p>
+
+    <div class="coin-rules">
+
+      <div class="coin-rule reveal">
+        <div class="coin-rule__left">
+          <img src="https://rawr.hackclub.com/dino_needs_sleep.png" alt="Tired dino coding"/>
+        </div>
+        <div class="coin-rule__body">
+          <span class="coin-rule__num">Rule 1</span>
+          <h4>1 hour of real work = 1 BBQ Coin</h4>
+          <p>Log the time you spend coding, designing, writing, or building.
+            Be honest. That's all that's required.</p>
+        </div>
+        <div class="coin-rule__icon">⏱</div>
+      </div>
+
+      <div class="rule-arrow">
+        <svg viewBox="0 0 60 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 6 C 22 18, 38 32, 30 50" stroke="#c0392b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M22 43 L30 52 L38 43" stroke="#c0392b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="coin-rule coin-rule--flip reveal">
+        <div class="coin-rule__icon"></div>
+        <div class="coin-rule__body">
+          <span class="coin-rule__num">Rule 2</span>
+          <h4>Ship a project = bonus coins on top</h4>
+          <p>Every completed and publicly shipped project earns you a bonus
+            stack of coins on top of your hourly tally.</p>
+        </div>
+        <div class="coin-rule__left">
+          <img src="https://rawr.hackclub.com/dino_winning.png" alt="Dino winning"/>
+        </div>
+      </div>
+
+      <div class="rule-arrow">
+        <svg viewBox="0 0 60 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 6 C 22 18, 38 32, 30 50" stroke="#e67e22" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M22 43 L30 52 L38 43" stroke="#e67e22" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="coin-rule reveal">
+        <div class="coin-rule__left">
+          <img src="https://rawr.hackclub.com/restaurant_dinosaur.png" alt="Dino shopping"/>
+        </div>
+        <div class="coin-rule__body">
+          <span class="coin-rule__num">Rule 3</span>
+          <h4>Spend coins in the BBQ Shop</h4>
+          <p>Swap your coins for real-world swag, HQ room upgrades,
+            secret items, and Hall of Fame status.</p>
+        </div>
+        <div class="coin-rule__icon"></div>
+      </div>
+
+    </div><!-- /coin-rules -->
+
+    <!-- Visual coin display — like a mission briefing card -->
+    <div class="coin-display reveal">
+      <div class="coin-display__left">
+        <span class="big-coin">🪙</span>
+        <span class="big-coin-label">1 BBQ Coin</span>
+      </div>
+      <div class="coin-display__eq">=</div>
+      <div class="coin-display__right">
+        <div class="cdr cdr--base">⏱ 1 real hour of coding</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════ BBQ SHOP ══════════════════ -->
+<section class="shop" id="shop">
+
+  <div class="shop__head">
+    <div class="section-stamp section-stamp--green">Spend Your Coins</div>
+    <h2 class="section-h">The BBQ Shop</h2>
+    <p class="section-sub">Everything you can unlock. Nothing buyable anywhere else, ever.</p>
+  </div>
+
+  <div class="shop__grid">
+
+    <!-- Raspberry Pi 5 -->
+    <div class="item-card reveal" style="--rot:-1.5deg; --ac:#e67e22">
+      <div class="item-card__tack"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1603732551681-2e91159b9dc2?w=440&h=230&fit=crop" alt="Raspberry Pi"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--earn">Top Pick</div>
+        <h3>Raspberry Pi 5</h3>
+        <p>A full Linux computer in your palm. Build servers, robots, retro consoles — whatever you dream up.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~25 hrs</span><span class="item-card__cost-coins">2,500 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- iPad -->
+    <div class="item-card reveal" style="--rot:1.2deg; --ac:#2980b9">
+      <div class="item-card__tack item-card__tack--blue"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=440&h=230&fit=crop" alt="iPad"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--rare">High Tier</div>
+        <h3>iPad</h3>
+        <p>Sketch, prototype, code on the go. The most-wanted reward for big shippers.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~60 hrs</span><span class="item-card__cost-coins">6,000 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Mechanical Keyboard Kit -->
+    <div class="item-card reveal" style="--rot:-0.8deg; --ac:#c0392b">
+      <div class="item-card__tack item-card__tack--red"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=440&h=230&fit=crop" alt="Mechanical Keyboard"/>
+      </div>
+      <div class="item-card__body">
+        <h3>Mechanical Keyboard Kit</h3>
+        <p>Build your own clicky keyboard from scratch. Solder it, tune it, flex it at every hackathon.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~15 hrs</span><span class="item-card__cost-coins">1,500 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Sprig Console -->
+    <div class="item-card reveal" style="--rot:2deg; --ac:#27ae60">
+      <div class="item-card__tack item-card__tack--green"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=440&h=230&fit=crop" alt="Sprig Console"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--earn">Ship a Game</div>
+        <h3>Sprig Console</h3>
+        <p>Write a JS game, get a real hand-soldered handheld to play it on. Made by Hack Club.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~30 hrs</span><span class="item-card__cost-coins">3,000 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Sticker Pack — BEST DEAL -->
+    <div class="item-card reveal" style="--rot:-1deg; --ac:#d4a017">
+      <div class="item-card__tack item-card__tack--gold"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1589380022073-9a667d0a5f4e?w=440&h=230&fit=crop" alt="Sticker Pack"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--earn" style="background:var(--green);">⭐ Best Deal</div>
+        <h3>Hack Club Sticker Pack</h3>
+        <p>Straight from HQ in Vermont. Orpheus, limited editions, holographic. Slap them everywhere — walls, laptops, people.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~5 hrs</span><span class="item-card__cost-coins">500 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Blot Drawing Machine -->
+    <div class="item-card reveal" style="--rot:0.7deg; --ac:#8e44ad">
+      <div class="item-card__tack item-card__tack--purple"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=440&h=230&fit=crop" alt="Blot"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--rare">Write Code</div>
+        <h3>Blot Drawing Machine</h3>
+        <p>Code generative art, receive a real pen-plotting robot that draws it on paper.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~40 hrs</span><span class="item-card__cost-coins">4,000 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Hardware Bundle -->
+    <div class="item-card reveal" style="--rot:-1.8deg; --ac:#e91e8c">
+      <div class="item-card__tack"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=440&h=230&fit=crop" alt="Hardware Bundle"/>
+      </div>
+      <div class="item-card__body">
+        <h3>Hardware Bundle</h3>
+        <p>ESP32s, Arduinos, sensors, breadboards, jumper wires. Order anything for your next physical build.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~20 hrs</span><span class="item-card__cost-coins">2,000 🍖</span></div>
+      </div>
+    </div>
+
+    <!-- Mystery Box -->
+    <div class="item-card item-card--mystery reveal" style="--rot:1.5deg; --ac:#c0392b">
+      <div class="item-card__tack item-card__tack--red"></div>
+      <div class="item-card__img">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=440&h=230&fit=crop" alt="Mystery"/>
+      </div>
+      <div class="item-card__body">
+        <div class="item-card__badge item-card__badge--mystery">???</div>
+        <h3>Mystery Loot Box</h3>
+        <p>Only the top shippers ever find out what's inside. Could be anything. Could be legendary.</p>
+        <div class="item-card__cost"><span class="item-card__cost-hrs">⏱ ~50 hrs</span><span class="item-card__cost-coins">5,000 🍖</span></div>
+      </div>
+    </div>
+
+  </div><!-- /shop__grid -->
+
+  <!-- Orpheus speech bubble footer -->
+  <div class="shop__dino-row">
+    <img src="https://rawr.hackclub.com/dino_sees_something_she_wants.png" alt="Orpheus wants it all"/>
+    <div class="shop__bubble">I want it ALL and I will SHIP for it!</div>
+  </div>
+
+</section>
+
+
+
+
+<!-- ══════════════════ TEAM ══════════════════ -->
+<section class="team-sec" id="team">
+  <div class="team-sec__inner">
+
+    <div class="team-sec__head">
+      <div class="section-stamp section-stamp--red">The People</div>
+      <h2 class="section-h">Behind the Safehouse</h2>
+      <p class="section-sub">The hacker who built this place.</p>
+    </div>
+
+    <div class="team-cards">
+
+      <div class="team-card reveal">
+        <div class="team-card__tack"></div>
+        <div class="team-card__photo-wrap">
+          <img
+            src="https://avatars.githubusercontent.com/aref-hasan?s=200"
+            onerror="this.src='https://rawr.hackclub.com/smart_dinosaur_docs.png'"
+            alt="Aref"
+            class="team-card__photo"/>
+          <div class="team-card__badge">Founder</div>
+        </div>
+        <div class="team-card__body">
+          <h3 class="team-card__name">Aref</h3>
+          <p class="team-card__role">Founder of Safehouse YSWS</p>
+          <p class="team-card__bio">Built the Safehouse from scratch — the rooms, the coins, the wall. If something's broken, blame him. If it's cool, also blame him.</p>
+      </div>
+      </div>
+
+    </div>
+
+    <div class="team-dino-row">
+      <img src="https://rawr.hackclub.com/motivational_dinosaur.png" alt="Orpheus motivating"/>
+      <div class="team-bubble">We ship because <em>he</em> ships first.</div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════ RSVP / SIGNUP ══════════════════ -->
+<section class="cta-sec" id="signup">
+  <div class="cta-sec__paper">
+
+    <div class="tape tape--tl"></div>
+    <div class="tape tape--tr"></div>
+
+    <!-- STATE 1 — Teaser (shown first) -->
+    <div id="rsvp-cta" class="rsvp-s rsvp-s--on">
+      <img src="https://rawr.hackclub.com/hyper-dino-wave.gif"
+           alt="Orpheus waving" class="cta-sec__dino"/>
+      <div class="section-stamp section-stamp--dark">Coming Soon</div>
+      <h2 class="cta-sec__title">Your Safehouse Awaits.</h2>
+      <p class="cta-sec__body">
+        Safehouse isn't open yet — but you can reserve your spot right now.
+        Drop your details and we'll reach out the moment the doors open.
+      </p>
+      <button class="btn btn--ink btn--xl" id="rsvp-open">
+        Reserve My Spot
+      </button>
+      <p class="cta-sec__fine">Free · No commitment · Just interest</p>
+    </div>
+
+    <!-- STATE 2 — RSVP Form -->
+    <div id="rsvp-form-wrap" class="rsvp-s">
+      <img src="https://rawr.hackclub.com/smart_dinosaur_docs.png"
+           alt="Orpheus reading" class="cta-sec__dino"/>
+      <div class="section-stamp section-stamp--dark">Reserve Your Spot</div>
+      <h2 class="cta-sec__title" style="font-size:clamp(1.5rem,4vw,2.2rem)">
+        Are you interested in Safehouse?
+      </h2>
+
+      <form id="rsvp-form" class="rsvp-form" novalidate>
+
+        <div class="rsvp-field">
+          <label class="rsvp-label" for="rf-name">Your Name *</label>
+          <input class="rsvp-input" id="rf-name" type="text"
+            placeholder="What should we call you?" autocomplete="name"/>
+          <span class="rsvp-err" id="e-name"></span>
+        </div>
+
+        <div class="rsvp-field">
+          <label class="rsvp-label" for="rf-email">Email Address *</label>
+          <input class="rsvp-input" id="rf-email" type="email"
+            placeholder="you@email.com" autocomplete="email"/>
+          <span class="rsvp-err" id="e-email"></span>
+        </div>
+
+        <div class="rsvp-field">
+          <label class="rsvp-label">How excited are you? *</label>
+          <div class="emoji-row" id="emoji-row" role="group">
+            <button type="button" class="emoji-btn" data-val="1">😐<span>1 — Meh</span></button>
+            <button type="button" class="emoji-btn" data-val="2">🤔<span>2 — Maybe</span></button>
+            <button type="button" class="emoji-btn" data-val="3">😊<span>3 — Interested</span></button>
+            <button type="button" class="emoji-btn" data-val="4">🔥<span>4 — Excited</span></button>
+            <button type="button" class="emoji-btn" data-val="5">🤯<span>5 — NEED IT</span></button>
+          </div>
+          <input type="hidden" id="rf-excited"/>
+          <span class="rsvp-err" id="e-excited"></span>
+        </div>
+
+        <div class="rsvp-field">
+          <label class="rsvp-label" for="rf-hear">How did you hear about Safehouse?</label>
+          <input class="rsvp-input" id="rf-hear" type="text"
+            placeholder="Slack, a friend, social media…"/>
+        </div>
+
+        <div id="rsvp-err-global" class="rsvp-err-global" style="display:none"></div>
+
+        <div class="rsvp-actions">
+          <button type="button" class="btn btn--ghost-ink" id="rsvp-back">← Back</button>
+          <button type="submit" class="btn btn--ink" id="rsvp-submit">
+            <span id="rsvp-btn-label">Count Me In</span>
+            <span id="rsvp-btn-spin" style="display:none">Sending…</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- STATE 3 — Success -->
+    <div id="rsvp-success" class="rsvp-s">
+      <img src="https://rawr.hackclub.com/party_orpheus.png"
+           alt="Party Orpheus" class="cta-sec__dino"/>
+      <div class="section-stamp section-stamp--green">You're on the list!</div>
+      <h2 class="cta-sec__title" style="font-size:clamp(1.8rem,4vw,2.6rem)">
+        We'll see you in the Safehouse
+      </h2>
+      <p class="cta-sec__body">
+        Thanks for signing up! When Safehouse opens, you'll hear from us first.
+        Keep building cool stuff in the meantime.
+      </p>
+      <p id="rsvp-success-name" class="rsvp-success-name"></p>
+      <p class="cta-sec__fine">Share with friends · Stay hyped · Start building</p>
+      </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+
+    <div class="footer__brand">
+      <img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="Hack Club" class="footer__flag"/>
+      <div class="footer__brand-text">
+        <span class="footer__name">Safehouse</span>
+        <span class="footer__tagline">A Hack Club Event</span>
+      </div>
+    </div>
+
+    <nav class="footer__nav">
+      <a href="#how">How It Works</a>
+      <a href="#coins">BBQ Coins</a>
+      <a href="#shop">Shop</a>
+      <a href="#team">Team</a>
+      <a href="#signup">RSVP</a>
+    </nav>
+
+    <div class="footer__right">
+      <p class="footer__copy">© 2026 Hack Club. All rights reserved.</p>
+      <p class="footer__made">Made with ❤️ by Aref, for hackers.</p>
+      </div>
+
+  </div>
+  <div class="footer__bar"></div>
+</footer>
+
+
+<script src="script.js"></script>
+</body>
+</html>
