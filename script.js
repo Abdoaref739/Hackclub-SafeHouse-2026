@@ -239,6 +239,32 @@
     return ok;
   }
 
+
+
+  function launchConfetti() {
+  const duration = 3000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
   document.getElementById('rf-name') .addEventListener('input', () => clearErr('name'));
   document.getElementById('rf-email').addEventListener('input', () => clearErr('email'));
 
@@ -263,8 +289,20 @@
         headers:{'Content-Type':'application/x-www-form-urlencoded'},
         body: body.toString(),
       });
-      successName.textContent = `See you there, ${name}! 👋`;
-      show(sSuccess);
+      emailjs.send("service_1o5ij6p","template_aokp6xc",{
+  name: name,
+  email: email
+})
+.then(function(response) {
+   console.log("Email sent!", response.status);
+})
+.catch(function(error) {
+   console.log("Email failed", error);
+});
+
+successName.textContent = `See you there, ${name}!`;
+show(sSuccess);
+launchConfetti();
     } catch {
       globalErr.textContent = 'Something went wrong — check your connection and try again.';
       globalErr.style.display = 'block';
@@ -275,3 +313,4 @@
     }
   });
 })();
+
